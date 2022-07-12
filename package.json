@@ -1,0 +1,19 @@
+{
+  "name": "explomandlebrot",
+  "version": "1.0.0",
+  "description": "Explore the mandlebrot set, with surreal fractal music",
+  "main": "index.js",
+  "author": "Mitchell (Midly) Roberts <mitchell.roberts11@gmail.com>",
+  "devDependencies": {
+    "tsc": "^2.0.4",
+    "typescript": "^4.7.4"
+  },
+  "dependencies": {
+    "tone": "^14.7.77",
+    "tonejs-instrument-piano-mp3": "^1.1.2"
+  },
+  "scripts": {
+      "build": "tsc",
+      "postbuild": "cp -R node_modules build/node_modules"
+  }
+}
