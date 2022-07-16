@@ -1,5 +1,6 @@
 {
   "name": "explomandlebrot",
+  "license": "MIT",
   "version": "1.0.0",
   "description": "Explore the mandlebrot set, with surreal fractal music",
   "main": "index.js",
@@ -17,8 +18,7 @@
     "tonejs-instrument-piano-mp3": "^1.1.2"
   },
   "scripts": {
-    "build": "yarn run webpack",
-    "serve": "live-server --cors",
-    "postbuild": "cp -R node_modules build/node_modules"
+    "build": "yarn run webpack --mode=development",
+    "serve": "live-server --cors"
   }
 }

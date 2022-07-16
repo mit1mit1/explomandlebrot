@@ -8,6 +8,7 @@ import {
 } from "./utils/tonejs";
 import * as Tone from "tone";
 
+let allowAudio = false;
 const calculatedNumbers = new Map();
 
 const availableColorsMe = [
@@ -91,7 +92,7 @@ const getColors = (
         centreY + (j - 0.5 * yResolution) * yStepDistance
       );
       let mandleNumber = calculateMandlenumber(xPosition, yPosition, 0, 0, 0);
-      if (i < 5 && j < 5) {
+      if ((allowAudio) && i < 5 && j < 5) {
         let mandleNote: Note = {
           pitch: pitchNames[mandleNumber % pitchNames.length],
           durations: [durationNames[mandleNumber % durationNames.length]],
@@ -142,7 +143,14 @@ let centreX = -2.001;
 let centreY = 0;
 let xStepDistance = 0.001;
 let yStepDistance = 0.001;
-let colors: Array<Array<string>> = [];
+let colors = getColors(
+  xResolution,
+  yResolution,
+  xStepDistance,
+  yStepDistance,
+  centreX,
+  centreY
+);
 let prevColors = colors.map((colorArray) => colorArray.map(() => "#000"));
 const recalculateColors = () => {
   colors = getColors(
@@ -209,7 +217,7 @@ const zoomIn = () => {
   recalculateColors();
 };
 
-const handleKeypress = (event: { key: string }) => {
+const handleKeypress = (event: any) => {
   if (event.key === "w") {
     goUp();
   }
@@ -228,7 +236,15 @@ const handleKeypress = (event: { key: string }) => {
   if (event.key === "e") {
     zoomOut();
   }
-  Tone.start();
-  instrument.sync();
-  Tone.Transport.start();
+  if (allowAudio) {
+    Tone.start();
+    instrument.sync();
+    Tone.Transport.start();
+  } else {
+    allowAudio = true;
+  }
 };
+
+document
+  .querySelector("#explomandlebrotbox")
+  ?.addEventListener("keypress", handleKeypress);
