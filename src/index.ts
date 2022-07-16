@@ -84,6 +84,12 @@ const getColors = (
   Tone.Transport.bpm.value = 120;
   Tone.Transport.position = "0:0:0";
   let currentTime: ToneJSDuration = { "16n": 0 };
+  if (allowAudio) {
+    Tone.start();
+    Tone.Transport.cancel();
+    instrument.releaseAll();
+    instrument.sync();
+  }
   for (let i = 0; i < xResolution; i++) {
     let xPosition = centreX + (i - 0.5 * xResolution) * xStepDistance;
     colors.push([]);
@@ -93,6 +99,7 @@ const getColors = (
       );
       let mandleNumber = calculateMandlenumber(xPosition, yPosition, 0, 0, 0);
       if ((allowAudio) && i < 5 && j < 5) {
+        
         let mandleNote: Note = {
           pitch: pitchNames[mandleNumber % pitchNames.length],
           durations: [durationNames[mandleNumber % durationNames.length]],
