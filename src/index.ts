@@ -80,10 +80,6 @@ const getColors = (
 ) => {
   const colors: Array<Array<string>> = [];
 
-  Tone.start();
-  Tone.Transport.cancel();
-  instrument.releaseAll();
-  instrument.sync();
   Tone.Transport.bpm.value = 120;
   Tone.Transport.position = "0:0:0";
   let currentTime: ToneJSDuration = { "16n": 0 };
@@ -95,35 +91,36 @@ const getColors = (
         centreY + (j - 0.5 * yResolution) * yStepDistance
       );
       let mandleNumber = calculateMandlenumber(xPosition, yPosition, 0, 0, 0);
-      let mandleNote: Note = {
-        pitch: pitchNames[mandleNumber % pitchNames.length],
-        durations: [durationNames[mandleNumber % durationNames.length]],
-      };
-      if (!mandleNote.rest) {
-        let holdNoteLength: ToneJSDuration | string = addDurationObjects(
-          {},
-          mandleNote.durations
-        );
-        if (mandleNote.staccato) {
-          if (
-            mandleNote.durations.length === 1 &&
-            (mandleNote.durations[0] === "16n" ||
-              mandleNote.durations[0] === "8n")
-          ) {
-            holdNoteLength = "32n";
-          } else {
-            holdNoteLength = "16n";
+      if (i < 5 && j < 5) {
+        let mandleNote: Note = {
+          pitch: pitchNames[mandleNumber % pitchNames.length],
+          durations: [durationNames[mandleNumber % durationNames.length]],
+        };
+        if (!mandleNote.rest) {
+          let holdNoteLength: ToneJSDuration | string = addDurationObjects(
+            {},
+            mandleNote.durations
+          );
+          if (mandleNote.staccato) {
+            if (
+              mandleNote.durations.length === 1 &&
+              (mandleNote.durations[0] === "16n" ||
+                mandleNote.durations[0] === "8n")
+            ) {
+              holdNoteLength = "32n";
+            } else {
+              holdNoteLength = "16n";
+            }
           }
+          let attackDuration = holdNoteLength;
+          instrument.triggerAttackRelease(
+            mandleNote.pitch,
+            attackDuration,
+            currentTime
+          );
         }
-        let attackDuration = holdNoteLength;
-        instrument.triggerAttackRelease(
-          mandleNote.pitch,
-          attackDuration,
-          currentTime
-        );
+        currentTime = addDurationObjects(currentTime, mandleNote.durations);
       }
-      currentTime = addDurationObjects(currentTime, mandleNote.durations);
-      Tone.Transport.start();
       if (mandleNumber == -1) {
         colors[i].push("black");
       } else {
@@ -145,14 +142,7 @@ let centreX = -2.001;
 let centreY = 0;
 let xStepDistance = 0.001;
 let yStepDistance = 0.001;
-let colors = getColors(
-  xResolution,
-  yResolution,
-  xStepDistance,
-  yStepDistance,
-  centreX,
-  centreY
-);
+let colors: Array<Array<string>> = [];
 let prevColors = colors.map((colorArray) => colorArray.map(() => "#000"));
 const recalculateColors = () => {
   colors = getColors(
@@ -187,22 +177,27 @@ const recalculateColors = () => {
     }
   }
 };
+
 const goUp = () => {
   centreY = centreY - yStepDistance * 32;
   recalculateColors();
 };
+
 const goDown = () => {
   centreY = centreY + yStepDistance * 32;
   recalculateColors();
 };
+
 const goLeft = () => {
   centreX = centreX - xStepDistance * 32;
   recalculateColors();
 };
+
 const goRight = () => {
   centreX = centreX + xStepDistance * 32;
   recalculateColors();
 };
+
 const zoomOut = () => {
   xStepDistance = xStepDistance * 2;
   yStepDistance = yStepDistance * 2;
@@ -213,6 +208,7 @@ const zoomIn = () => {
   yStepDistance = yStepDistance * 0.5;
   recalculateColors();
 };
+
 const handleKeypress = (event: { key: string }) => {
   if (event.key === "w") {
     goUp();
@@ -232,4 +228,7 @@ const handleKeypress = (event: { key: string }) => {
   if (event.key === "e") {
     zoomOut();
   }
+  Tone.start();
+  instrument.sync();
+  Tone.Transport.start();
 };
