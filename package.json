@@ -19,6 +19,7 @@
   },
   "scripts": {
     "build": "yarn run webpack --mode=development",
+    "watch": "yarn run webpack --mode=development --watch ",
     "serve": "live-server --cors"
   }
 }

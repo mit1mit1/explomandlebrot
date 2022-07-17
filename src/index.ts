@@ -1,8 +1,10 @@
 import {
   addDurationObjects,
+  BaseDuration,
   durationNames,
   instrument,
   Note,
+  Pitch,
   pitchNames,
   ToneJSDuration,
 } from "./utils/tonejs";
@@ -10,6 +12,53 @@ import * as Tone from "tone";
 
 let allowAudio = false;
 const calculatedNumbers = new Map();
+
+const availableDurations: Array<BaseDuration> = [
+  "16n",
+  // "8n",
+  "8n.",
+  "4n",
+  "4n.",
+  "2n",
+  "2n.",
+  "1n",
+  "1n.",
+  // "16t",
+  // "8t",
+  // "4t",
+  // "2t",
+];
+
+
+const availablePitches: Array<Pitch> = [
+  "A3",
+  // "A#3",
+  // "B3",
+  "C4",
+  // "C#4",
+  // "D4",
+  "D#4",
+  // "E4",
+  // "F4",
+  "F#4",
+  // "G4",
+  // "G#4",
+  "A4",
+  // "A#4",
+  // "B4",
+  "C5",
+  // "C#5",
+  // "D5",
+  "D#5",
+  // "E5",
+  // "F5",
+  "F#5",
+  // "G5",
+  // "G#5",
+  "A5",
+  // "A#5",
+  // "B5",
+];
 
 const availableColorsMe = [
   "#03fcfc",
@@ -98,11 +147,12 @@ const getColors = (
         centreY + (j - 0.5 * yResolution) * yStepDistance
       );
       let mandleNumber = calculateMandlenumber(xPosition, yPosition, 0, 0, 0);
-      if ((allowAudio) && i < 5 && j < 5) {
-        
+      if (allowAudio && i % 73 === 0 && j % 48 === 0) {
         let mandleNote: Note = {
-          pitch: pitchNames[mandleNumber % pitchNames.length],
-          durations: [durationNames[mandleNumber % durationNames.length]],
+          pitch: availablePitches[Math.abs(mandleNumber) % availablePitches.length],
+          durations: [
+            availableDurations[Math.abs(mandleNumber) % availableDurations.length],
+          ],
         };
         if (!mandleNote.rest) {
           let holdNoteLength: ToneJSDuration | string = addDurationObjects(
