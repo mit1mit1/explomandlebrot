@@ -29,7 +29,6 @@ const availableDurations: Array<BaseDuration> = [
   // "2t",
 ];
 
-
 const availablePitches: Array<Pitch> = [
   "A3",
   // "A#3",
@@ -120,6 +119,42 @@ const calculateMandlenumber = (
   }
 };
 
+const pushNote = (mandleNumber: number, i: number, j: number, currentTime: ToneJSDuration) => {
+  if (allowAudio) {
+    let mandleNote: Note = {
+      pitch: availablePitches[Math.abs(mandleNumber) % availablePitches.length],
+      durations: [
+        availableDurations[Math.abs(mandleNumber) % availableDurations.length],
+      ],
+    };
+    if (!mandleNote.rest) {
+      let holdNoteLength: ToneJSDuration | string = addDurationObjects(
+        {},
+        mandleNote.durations
+      );
+      if (mandleNote.staccato) {
+        if (
+          mandleNote.durations.length === 1 &&
+          (mandleNote.durations[0] === "16n" ||
+            mandleNote.durations[0] === "8n")
+        ) {
+          holdNoteLength = "32n";
+        } else {
+          holdNoteLength = "16n";
+        }
+      }
+      let attackDuration = holdNoteLength;
+      instrument.triggerAttackRelease(
+        mandleNote.pitch,
+        attackDuration,
+        currentTime
+      );
+    }
+    return addDurationObjects(currentTime, mandleNote.durations);
+  }
+  return currentTime;
+};
+
 const getColors = (
   xResolution: number,
   yResolution: number,
@@ -147,38 +182,7 @@ const getColors = (
         centreY + (j - 0.5 * yResolution) * yStepDistance
       );
       let mandleNumber = calculateMandlenumber(xPosition, yPosition, 0, 0, 0);
-      if (allowAudio && i % 73 === 0 && j % 48 === 0) {
-        let mandleNote: Note = {
-          pitch: availablePitches[Math.abs(mandleNumber) % availablePitches.length],
-          durations: [
-            availableDurations[Math.abs(mandleNumber) % availableDurations.length],
-          ],
-        };
-        if (!mandleNote.rest) {
-          let holdNoteLength: ToneJSDuration | string = addDurationObjects(
-            {},
-            mandleNote.durations
-          );
-          if (mandleNote.staccato) {
-            if (
-              mandleNote.durations.length === 1 &&
-              (mandleNote.durations[0] === "16n" ||
-                mandleNote.durations[0] === "8n")
-            ) {
-              holdNoteLength = "32n";
-            } else {
-              holdNoteLength = "16n";
-            }
-          }
-          let attackDuration = holdNoteLength;
-          instrument.triggerAttackRelease(
-            mandleNote.pitch,
-            attackDuration,
-            currentTime
-          );
-        }
-        currentTime = addDurationObjects(currentTime, mandleNote.durations);
-      }
+      currentTime = pushNote(mandleNumber, i, j, currentTime);
       if (mandleNumber == -1) {
         colors[i].push("black");
       } else {
@@ -194,12 +198,14 @@ const getColors = (
   return colors;
 };
 
-let xResolution = 648;
-let yResolution = 400;
+const rectSideLength = 50;
+
+let xResolution = 11;
+let yResolution = 11;
 let centreX = -2.001;
 let centreY = 0;
-let xStepDistance = 0.001;
-let yStepDistance = 0.001;
+let xStepDistance = 0.01;
+let yStepDistance = 0.01;
 let colors = getColors(
   xResolution,
   yResolution,
@@ -236,7 +242,12 @@ const recalculateColors = () => {
     for (let j = 0; j < colors[i].length; j++) {
       if (prevColors[i][j] !== colors[i][j]) {
         gl.fillStyle = colors[i][j];
-        gl.fillRect(i, j, 1, 1);
+        gl.fillRect(
+          i * rectSideLength,
+          j * rectSideLength,
+          rectSideLength,
+          rectSideLength
+        );
         prevColors[i][j] = colors[i][j];
       }
     }
@@ -244,22 +255,22 @@ const recalculateColors = () => {
 };
 
 const goUp = () => {
-  centreY = centreY - yStepDistance * 32;
+  centreY = centreY - yStepDistance * 3;
   recalculateColors();
 };
 
 const goDown = () => {
-  centreY = centreY + yStepDistance * 32;
+  centreY = centreY + yStepDistance * 3;
   recalculateColors();
 };
 
 const goLeft = () => {
-  centreX = centreX - xStepDistance * 32;
+  centreX = centreX - xStepDistance * 3;
   recalculateColors();
 };
 
 const goRight = () => {
-  centreX = centreX + xStepDistance * 32;
+  centreX = centreX + xStepDistance * 3;
   recalculateColors();
 };
 
