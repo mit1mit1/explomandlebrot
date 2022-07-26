@@ -12,6 +12,7 @@ import * as Tone from "tone";
 
 let allowAudio = false;
 const calculatedNumbers = new Map();
+instrument.volume.value = -24;
 
 const availableDurations: Array<BaseDuration> = [
   "16n",
@@ -150,9 +151,7 @@ const pushNote = (mandleNumber: number, i: number, j: number, currentTime: ToneJ
         currentTime
       );
     }
-    return addDurationObjects(currentTime, mandleNote.durations);
   }
-  return currentTime;
 };
 
 const getColors = (
@@ -164,9 +163,10 @@ const getColors = (
   centreY: number
 ) => {
   const colors: Array<Array<string>> = [];
-
+  let sinceDifferentNumber = 1;
   Tone.Transport.bpm.value = 120;
   Tone.Transport.position = "0:0:0";
+  let prevMandleNumber = -2;
   let currentTime: ToneJSDuration = { "16n": 0 };
   if (allowAudio) {
     Tone.start();
@@ -182,7 +182,14 @@ const getColors = (
         centreY + (j - 0.5 * yResolution) * yStepDistance
       );
       let mandleNumber = calculateMandlenumber(xPosition, yPosition, 0, 0, 0);
-      currentTime = pushNote(mandleNumber, i, j, currentTime);
+      if (mandleNumber != prevMandleNumber) {
+        pushNote(mandleNumber, i, j, currentTime);
+        currentTime['16n'] = (currentTime['16n'] ?? 0) + sinceDifferentNumber;
+        sinceDifferentNumber = 1;
+        prevMandleNumber = mandleNumber;
+      } else {
+        sinceDifferentNumber++;
+      }
       if (mandleNumber == -1) {
         colors[i].push("black");
       } else {
