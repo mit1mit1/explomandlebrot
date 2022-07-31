@@ -14,6 +14,12 @@ let allowAudio = false;
 const calculatedNumbers = new Map();
 instrument.volume.value = -24;
 
+const MAX_ITERATIONS = 128;
+
+let initialStamina = 1000;
+let stamina = initialStamina;
+let nextStamina = stamina - 50;
+
 const availableDurations: Array<BaseDuration> = [
   "16n",
   // "8n",
@@ -133,7 +139,7 @@ const calculateMandlenumber = (
   if (magnitude > 50) {
     calculatedNumbersX.set(yPosition, iterations);
     return iterations;
-  } else if (iterations > 128) {
+  } else if (iterations > MAX_ITERATIONS) {
     calculatedNumbers.set(yPosition, -1);
     return -1;
   } else {
@@ -186,6 +192,14 @@ const pushNote = (
   }
 };
 
+const getXPosition = (xSquare: number) => {
+  return centreX + (xSquare - 0.5 * xResolution) * xStepDistance;
+};
+
+const getYPosition = (ySquare: number) => {
+  return centreY + (ySquare - 0.5 * yResolution) * yStepDistance;
+};
+
 const getColors = (
   xResolution: number,
   yResolution: number,
@@ -207,12 +221,10 @@ const getColors = (
     instrument.sync();
   }
   for (let i = 0; i < xResolution; i++) {
-    let xPosition = centreX + (i - 0.5 * xResolution) * xStepDistance;
+    let xPosition = getXPosition(i);
     colors.push([]);
     for (let j = 0; j < yResolution; j++) {
-      let yPosition = Math.abs(
-        centreY + (j - 0.5 * yResolution) * yStepDistance
-      );
+      let yPosition = getYPosition(j);
       let mandleNumber = calculateMandlenumber(xPosition, yPosition, 0, 0, 0);
       if (mandleNumber != prevMandleNumber) {
         pushNote(mandleNumber, i, j, currentTime);
@@ -351,6 +363,36 @@ const zoomIn = () => {
   recalculateColors();
 };
 
+const incrementStamina = ({
+  xSquare,
+  ySquare,
+}: {
+  xSquare: number;
+  ySquare: number;
+}) => {
+  const mandleNumber = calculateMandlenumber(
+    getXPosition(xSquare),
+    getYPosition(ySquare),
+    0,
+    0,
+    0
+  );
+  stamina = stamina - (mandleNumber === -1 ? MAX_ITERATIONS + 1 : mandleNumber - 5);
+  if (stamina <= 0) {
+    stamina = nextStamina;
+    nextStamina = nextStamina - 50;
+    if (stamina <= 0) {
+      alert("Dead");
+    } else {
+      zoomIn();
+    }
+  }
+  const descriptionElement = document.querySelector("#description");
+  if (descriptionElement) {
+    descriptionElement.innerHTML = stamina.toString();
+  }
+};
+
 const characterUp = () => {
   if (characterPosition.ySquare <= 1) {
     viewportUp(yResolution - 2);
@@ -360,6 +402,7 @@ const characterUp = () => {
     characterPosition.ySquare--;
     drawCharacter(characterPosition);
   }
+  incrementStamina(characterPosition);
 };
 
 const characterDown = () => {
@@ -371,6 +414,7 @@ const characterDown = () => {
     characterPosition.ySquare++;
     drawCharacter(characterPosition);
   }
+  incrementStamina(characterPosition);
 };
 
 const characterLeft = () => {
@@ -382,6 +426,7 @@ const characterLeft = () => {
     characterPosition.xSquare--;
     drawCharacter(characterPosition);
   }
+  incrementStamina(characterPosition);
 };
 
 const characterRight = () => {
@@ -393,6 +438,7 @@ const characterRight = () => {
     characterPosition.xSquare++;
     drawCharacter(characterPosition);
   }
+  incrementStamina(characterPosition);
 };
 
 const handleKeypress = (event: any) => {
@@ -407,12 +453,6 @@ const handleKeypress = (event: any) => {
   }
   if (event.key === "d") {
     characterRight();
-  }
-  if (event.key === "q") {
-    zoomIn();
-  }
-  if (event.key === "e") {
-    zoomOut();
   }
   if (allowAudio) {
     Tone.start();
