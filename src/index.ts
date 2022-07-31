@@ -74,12 +74,39 @@ const availableColorsMe = [
   "#feb5ff",
   "#fffbb5",
 ];
+
 const availableColorsPinterest = [
   "#af43be",
   "#fd8090",
   "#c4ffff",
   "#08deea",
   "#1261d1",
+];
+
+const availableColorsHeat = [
+  "#fc05e4",
+  "#ff0fe8",
+  "#ff1fe9",
+  "#fc38e9",
+  "#e04ad2",
+  "#db65d0",
+  "#e07bd7",
+  "#e890e0",
+  "#f0a3e9",
+  "#f0b4ea",
+  "#edc0e9",
+  "#f2c9ef",
+  "#f5d3f2",
+  "#fadcf7",
+  "#fae3f8",
+  "#edddec",
+  "#d4c9d3",
+  // "#b8aeb7",
+  // "#a39ba2",
+  // "#918a90",
+  // "#7a747a",
+  // "#666166",
+  // "#4d494d",
 ];
 
 const calculateMandlenumber = (
@@ -120,7 +147,12 @@ const calculateMandlenumber = (
   }
 };
 
-const pushNote = (mandleNumber: number, i: number, j: number, currentTime: ToneJSDuration) => {
+const pushNote = (
+  mandleNumber: number,
+  i: number,
+  j: number,
+  currentTime: ToneJSDuration
+) => {
   if (allowAudio) {
     let mandleNote: Note = {
       pitch: availablePitches[Math.abs(mandleNumber) % availablePitches.length],
@@ -184,19 +216,17 @@ const getColors = (
       let mandleNumber = calculateMandlenumber(xPosition, yPosition, 0, 0, 0);
       if (mandleNumber != prevMandleNumber) {
         pushNote(mandleNumber, i, j, currentTime);
-        currentTime['16n'] = (currentTime['16n'] ?? 0) + sinceDifferentNumber;
+        currentTime["16n"] = (currentTime["16n"] ?? 0) + sinceDifferentNumber;
         sinceDifferentNumber = 1;
         prevMandleNumber = mandleNumber;
       } else {
         sinceDifferentNumber++;
       }
       if (mandleNumber == -1) {
-        colors[i].push("black");
+        colors[i].push("white");
       } else {
         colors[i].push(
-          availableColorsPinterest[
-            mandleNumber % availableColorsPinterest.length
-          ]
+          availableColorsHeat[mandleNumber % availableColorsHeat.length]
         );
       }
     }
@@ -261,23 +291,51 @@ const recalculateColors = () => {
   }
 };
 
-const goUp = () => {
-  centreY = centreY - yStepDistance * 3;
+const drawCharacter = ({
+  xSquare,
+  ySquare,
+}: {
+  xSquare: number;
+  ySquare: number;
+}) => {
+  var canvas = document.getElementById("character-canvas") as any;
+  var gl = canvas?.getContext("2d");
+
+  gl.clearRect(0, 0, canvas.width, canvas.height);
+  gl.fillStyle = "#000";
+  gl.fillRect(
+    (xSquare + 0.25) * rectSideLength,
+    (ySquare + 0.25) * rectSideLength,
+    0.5 * rectSideLength,
+    0.5 * rectSideLength
+  );
+};
+
+const characterPosition = {
+  xSquare: 5,
+  ySquare: 5,
+};
+
+drawCharacter(characterPosition);
+recalculateColors();
+
+const viewportUp = (steps: number) => {
+  centreY = centreY - yStepDistance * steps;
   recalculateColors();
 };
 
-const goDown = () => {
-  centreY = centreY + yStepDistance * 3;
+const viewportDown = (steps: number) => {
+  centreY = centreY + yStepDistance * steps;
   recalculateColors();
 };
 
-const goLeft = () => {
-  centreX = centreX - xStepDistance * 3;
+const viewportLeft = (steps: number) => {
+  centreX = centreX - xStepDistance * steps;
   recalculateColors();
 };
 
-const goRight = () => {
-  centreX = centreX + xStepDistance * 3;
+const viewportRight = (steps: number) => {
+  centreX = centreX + xStepDistance * steps;
   recalculateColors();
 };
 
@@ -286,24 +344,69 @@ const zoomOut = () => {
   yStepDistance = yStepDistance * 2;
   recalculateColors();
 };
+
 const zoomIn = () => {
   xStepDistance = xStepDistance * 0.5;
   yStepDistance = yStepDistance * 0.5;
   recalculateColors();
 };
 
+const characterUp = () => {
+  if (characterPosition.ySquare <= 1) {
+    viewportUp(yResolution - 2);
+    characterPosition.ySquare = yResolution - 2;
+    drawCharacter(characterPosition);
+  } else {
+    characterPosition.ySquare--;
+    drawCharacter(characterPosition);
+  }
+};
+
+const characterDown = () => {
+  if (characterPosition.ySquare >= yResolution - 2) {
+    viewportDown(yResolution - 2);
+    characterPosition.ySquare = 1;
+    drawCharacter(characterPosition);
+  } else {
+    characterPosition.ySquare++;
+    drawCharacter(characterPosition);
+  }
+};
+
+const characterLeft = () => {
+  if (characterPosition.xSquare <= 1) {
+    viewportLeft(xResolution - 2);
+    characterPosition.xSquare = xResolution - 2;
+    drawCharacter(characterPosition);
+  } else {
+    characterPosition.xSquare--;
+    drawCharacter(characterPosition);
+  }
+};
+
+const characterRight = () => {
+  if (characterPosition.xSquare >= xResolution - 2) {
+    viewportRight(xResolution - 2);
+    characterPosition.xSquare = 1;
+    drawCharacter(characterPosition);
+  } else {
+    characterPosition.xSquare++;
+    drawCharacter(characterPosition);
+  }
+};
+
 const handleKeypress = (event: any) => {
   if (event.key === "w") {
-    goUp();
+    characterUp();
   }
   if (event.key === "a") {
-    goLeft();
+    characterLeft();
   }
   if (event.key === "s") {
-    goDown();
+    characterDown();
   }
   if (event.key === "d") {
-    goRight();
+    characterRight();
   }
   if (event.key === "q") {
     zoomIn();
