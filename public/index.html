@@ -6,22 +6,37 @@
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
-    <script type="module" orign="self" src="http://127.0.0.1:8080/dist/main.js"></script>
+    <style>
+      .gameCanvas {
+        position: absolute;
+        width: 900px;
+        height: 550px;
+        left: 50%;
+        margin-left: -450px;
+        top: 50%;
+        margin-top: -275px;
+      }
+    </style>
+    <script
+      type="module"
+      orign="self"
+      src="http://127.0.0.1:8080/dist/main.js"
+    ></script>
   </head>
   <body>
     <p id="description">mandlerrain works!</p>
     <div tabindex="0" id="explomandlebrotbox">
       <div>
         <canvas
-          width="550"
+          width="900"
           height="550"
-          style='position:absolute'
+          class="gameCanvas"
           id="mandlerrain-canvas"
         ></canvas>
         <canvas
-          width="550"
+          width="900"
           height="550"
-          style='position:absolute'
+          class="gameCanvas"
           id="character-canvas"
         ></canvas>
       </div>
