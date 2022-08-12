@@ -11,7 +11,7 @@ import { getXPosition, getYPosition } from "./grid";
 import { xResolution, yResolution } from "../constants";
 import { calculateMandlenumber } from "./math";
 
-const availableDurations: Array<BaseDuration> = [
+const quarterDurations: Array<BaseDuration> = [
   "16n",
   // "8n",
   "8n.",
@@ -27,7 +27,7 @@ const availableDurations: Array<BaseDuration> = [
   // "2t",
 ];
 
-const availablePitches: Array<Pitch> = [
+const tritoneScale: Array<Pitch> = [
   "A3",
   // "A#3",
   // "B3",
@@ -57,6 +57,37 @@ const availablePitches: Array<Pitch> = [
   // "B5",
 ];
 
+const pentatonicScale: Array<Pitch> = [
+  // "A3",
+  "A#3",
+  // "B3",
+  // "C4",
+  "C#4",
+  // "D4",
+  "D#4",
+  // "E4",
+  // "F4",
+  "F#4",
+  // "G4",
+  "G#4",
+  // "A4",
+  "A#4",
+  // "B4",
+  // "C5",
+  "C#5",
+  // "D5",
+  "D#5",
+  // "E5",
+  // "F5",
+  "F#5",
+  // "G5",
+  "G#5",
+  // "A5",
+  "A#5",
+  // "B5",
+];
+
+
 const pushNote = (
   mandleNumber: number,
   currentTime: ToneJSDuration,
@@ -64,9 +95,9 @@ const pushNote = (
 ) => {
   if (allowAudio) {
     let mandleNote: Note = {
-      pitch: availablePitches[Math.abs(mandleNumber) % availablePitches.length],
+      pitch: pentatonicScale[Math.abs(mandleNumber) % pentatonicScale.length],
       durations: [
-        availableDurations[Math.abs(mandleNumber) % availableDurations.length],
+        quarterDurations[Math.abs(mandleNumber) % quarterDurations.length],
       ],
     };
     if (!mandleNote.rest) {
