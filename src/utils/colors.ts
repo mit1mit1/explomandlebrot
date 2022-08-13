@@ -1,4 +1,5 @@
-import { xResolution, yResolution } from "../constants";
+import { gridDistance, viewportCentre } from "../state";
+import { rectSideLengthX, rectSideLengthY, xResolution, yResolution } from "../constants";
 import { getXPosition, getYPosition } from "./grid";
 import { calculateMandlenumber } from "./math";
 
@@ -75,3 +76,38 @@ export const getColors = (
   }
   return colors;
 };
+
+let colors = getColors(
+  gridDistance.xStepDistance,
+  viewportCentre.centreX,
+  gridDistance.yStepDistance,
+  viewportCentre.centreY
+);
+let prevColors = colors.map((colorArray) => colorArray.map(() => "#000"));
+
+export const recalculateColors = () => {
+  colors = getColors(
+    gridDistance.xStepDistance,
+    viewportCentre.centreX,
+    gridDistance.yStepDistance,
+    viewportCentre.centreY
+  );
+  var canvas = document.getElementById("mandlerrain-canvas") as any;
+  var gl = canvas?.getContext("2d", { alpha: false });
+  for (let i = 0; i < colors.length; i++) {
+    for (let j = 0; j < colors[i].length; j++) {
+      if (prevColors[i][j] !== colors[i][j]) {
+        gl.fillStyle = colors[i][j];
+        gl.fillRect(
+          i * rectSideLengthX,
+          j * rectSideLengthY,
+          rectSideLengthX,
+          rectSideLengthY
+        );
+        prevColors[i][j] = colors[i][j];
+      }
+    }
+  }
+};
+
+recalculateColors();
