@@ -143,7 +143,7 @@ export const slide = async (
         characterLeft();
       }
     }
-    incrementStamina(newMandlenumber);
+    // incrementStamina(newMandlenumber);
     character.actionable = true;
   } else {
     if (retries < 10) {

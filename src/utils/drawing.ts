@@ -8,7 +8,8 @@ export const drawPopText = (text: string, milliseconds: number) => {
   gl.clearRect(0, 0, canvas.width, canvas.height);
   gl.fillStyle = "#2f2";
   gl.font = "90px Arial";
-  gl.fillText(text, 200, 200);
+  gl.textAlign = "center";
+  gl.fillText(text, 405, 270 + 35);
   setTimeout(() => gl.clearRect(0, 0, canvas.width, canvas.height), milliseconds);
 };
 

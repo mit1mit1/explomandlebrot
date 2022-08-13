@@ -1,6 +1,7 @@
 import * as Tone from "tone";
 import PianoMp3 from "tonejs-instrument-piano-mp3";
 import { slide } from "./utils/characterMovement";
+import { centreViewportOnCharacter, zoomIn, zoomOut } from "./utils/viewport";
 
 export let allowAudio = false;
 
@@ -21,6 +22,15 @@ const handleKeypress = (event: any) => {
   }
   if (event.key === "d") {
     slide("right", 0);
+  }
+  if (event.key === "q") {
+    zoomIn();
+  }
+  if (event.key === "e") {
+    zoomOut();
+  }
+  if (event.key === "f") {
+    centreViewportOnCharacter();
   }
   if (allowAudio) {
     Tone.start();
