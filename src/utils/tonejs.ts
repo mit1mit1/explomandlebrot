@@ -1,5 +1,3 @@
-import PianoMp3 from "tonejs-instrument-piano-mp3";
-
 export interface Note {
   pitch: Pitch;
   durations: Array<BaseDuration>;
@@ -73,8 +71,3 @@ export const addDurationObjects = (
   }
   return newObject;
 };
-
-export const instrument = new PianoMp3({
-  minify: true,
-}).toDestination("main");
-

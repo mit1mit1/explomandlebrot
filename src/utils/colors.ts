@@ -73,6 +73,5 @@ export const getColors = (
       }
     }
   }
-  console.log("finished calculating colors");
   return colors;
 };

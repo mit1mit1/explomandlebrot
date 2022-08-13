@@ -1,19 +1,20 @@
 import {
   addDurationObjects,
   BaseDuration,
-  instrument,
   Note,
   Pitch,
   ToneJSDuration,
 } from "./tonejs";
+
 import * as Tone from "tone";
 import { getXPosition, getYPosition } from "./grid";
 import { xResolution, yResolution } from "../constants";
 import { calculateMandlenumber } from "./math";
+import { instrument } from "../";
 
 const quarterDurations: Array<BaseDuration> = [
-  "16n",
-  // "8n",
+  // "16n",
+  "8n",
   "8n.",
   "4n",
   "4n.",
@@ -93,7 +94,7 @@ const pushNote = (
   currentTime: ToneJSDuration,
   allowAudio: boolean
 ) => {
-  if (allowAudio) {
+  if (allowAudio && instrument.loaded) {
     let mandleNote: Note = {
       pitch: pentatonicScale[Math.abs(mandleNumber) % pentatonicScale.length],
       durations: [
@@ -122,6 +123,10 @@ const pushNote = (
         attackDuration,
         currentTime
       );
+    }
+  } else {
+    if (!instrument.loaded) {
+      alert('instrument unloaded')
     }
   }
 };

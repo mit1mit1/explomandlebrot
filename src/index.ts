@@ -1,24 +1,29 @@
-import { instrument } from "./utils/tonejs";
 import * as Tone from "tone";
 import { getColors } from "./utils/colors";
 import { getXPosition, getYPosition } from "./utils/grid";
 import { calculateMandlenumber } from "./utils/math";
-import { MAX_ITERATIONS, xResolution, yResolution } from "./constants";
+import {
+  initialXStepDistance,
+  initialYStepDistance,
+  MAX_ITERATIONS,
+  rectSideLengthX,
+  rectSideLengthY,
+  xResolution,
+  yResolution,
+} from "./constants";
 import { getSounds } from "./utils/sounds";
+import PianoMp3 from "tonejs-instrument-piano-mp3";
 
 let allowAudio = false;
-instrument.volume.value = -24;
 
 let initialStamina = 1000;
 let stamina = initialStamina;
 let nextStamina = stamina - 50;
 
-const rectSideLength = 50;
-
 let centreX = -2.001;
 let centreY = 0;
-let xStepDistance = 0.11;
-let yStepDistance = 0.11;
+let xStepDistance = initialXStepDistance;
+let yStepDistance = initialYStepDistance;
 let colors = getColors(xStepDistance, centreX, yStepDistance, centreY);
 let prevColors = colors.map((colorArray) => colorArray.map(() => "#000"));
 
@@ -31,10 +36,10 @@ const recalculateColors = () => {
       if (prevColors[i][j] !== colors[i][j]) {
         gl.fillStyle = colors[i][j];
         gl.fillRect(
-          i * rectSideLength,
-          j * rectSideLength,
-          rectSideLength,
-          rectSideLength
+          i * rectSideLengthX,
+          j * rectSideLengthY,
+          rectSideLengthX,
+          rectSideLengthY
         );
         prevColors[i][j] = colors[i][j];
       }
@@ -55,16 +60,16 @@ const drawCharacter = ({
   gl.clearRect(0, 0, canvas.width, canvas.height);
   gl.fillStyle = "#000";
   gl.fillRect(
-    (xSquare + 0.25) * rectSideLength,
-    (ySquare + 0.25) * rectSideLength,
-    0.5 * rectSideLength,
-    0.5 * rectSideLength
+    (xSquare + 0.25) * rectSideLengthX,
+    (ySquare + 0.25) * rectSideLengthY,
+    0.5 * rectSideLengthX,
+    0.5 * rectSideLengthY
   );
 };
 
 const characterPosition = {
-  xSquare: 5,
-  ySquare: 5,
+  xSquare: Math.floor(xResolution / 2),
+  ySquare: Math.floor(yResolution / 2),
 };
 
 drawCharacter(characterPosition);
@@ -185,6 +190,11 @@ const characterRight = () => {
   incrementStamina(characterPosition);
 };
 
+export const instrument = new PianoMp3({
+  minify: true,
+}).toDestination("main");
+instrument.volume.value = -24;
+
 const handleKeypress = (event: any) => {
   if (event.key === "w") {
     characterUp();
@@ -198,12 +208,8 @@ const handleKeypress = (event: any) => {
   if (event.key === "d") {
     characterRight();
   }
-  console.log(allowAudio);
   if (allowAudio) {
-    console.log("about to tone start");
     Tone.start();
-    console.log("tried tone start");
-    instrument.sync();
     Tone.Transport.start();
   } else {
     allowAudio = true;
