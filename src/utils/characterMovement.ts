@@ -1,4 +1,4 @@
-import { MAX_ITERATIONS, xResolution, yResolution } from "../constants";
+import { MAX_ITERATIONS, stepMilliseconds, xResolution, yResolution } from "../constants";
 import {
   character,
   characterPosition,
@@ -73,39 +73,13 @@ export const characterRight = () => {
   }
 };
 
-export const slide = (direction: "up" | "down" | "left" | "right") => {
-  console.log("initialise slide");
-  const currentMandlenumber = calculateMandlenumber(
-    getXPosition(
-      characterPosition.xSquare,
-      gridDistance.xStepDistance,
-      viewportCentre.centreX
-    ),
-    getYPosition(
-      characterPosition.ySquare,
-      gridDistance.yStepDistance,
-      viewportCentre.centreY
-    ),
-    0,
-    0,
-    0
-  );
-  let newMandlenumber = currentMandlenumber;
-  let slides = 0;
-  while (newMandlenumber === currentMandlenumber && slides < 100) {
-    if (direction == "up") {
-      characterUp();
-    }
-    if (direction == "down") {
-      characterDown();
-    }
-    if (direction == "left") {
-      characterLeft();
-    }
-    if (direction == "right") {
-      characterRight();
-    }
-    newMandlenumber = calculateMandlenumber(
+export const slide = async (
+  direction: "up" | "down" | "left" | "right",
+  retries: number
+) => {
+  if (character.actionable) {
+    character.actionable = false;
+    const currentMandlenumber = calculateMandlenumber(
       getXPosition(
         characterPosition.xSquare,
         gridDistance.xStepDistance,
@@ -120,21 +94,60 @@ export const slide = (direction: "up" | "down" | "left" | "right") => {
       0,
       0
     );
-    slides++;
+    let newMandlenumber = currentMandlenumber;
+    let slides = 0;
+    while (newMandlenumber === currentMandlenumber && slides < 100) {
+      if (direction == "up") {
+        characterUp();
+      }
+      if (direction == "down") {
+        characterDown();
+      }
+      if (direction == "left") {
+        characterLeft();
+      }
+      if (direction == "right") {
+        characterRight();
+      }
+      newMandlenumber = calculateMandlenumber(
+        getXPosition(
+          characterPosition.xSquare,
+          gridDistance.xStepDistance,
+          viewportCentre.centreX
+        ),
+        getYPosition(
+          characterPosition.ySquare,
+          gridDistance.yStepDistance,
+          viewportCentre.centreY
+        ),
+        0,
+        0,
+        0
+      );
+      slides++;
+      if (newMandlenumber === currentMandlenumber) {
+        await new Promise((r) => setTimeout(r, stepMilliseconds));
+      }
+    }
+    if (slides > 1) {
+      if (direction == "up") {
+        characterDown();
+      }
+      if (direction == "down") {
+        characterUp();
+      }
+      if (direction == "left") {
+        characterRight();
+      }
+      if (direction == "right") {
+        characterLeft();
+      }
+    }
+    incrementStamina(newMandlenumber);
+    character.actionable = true;
+  } else {
+    if (retries < 8) {
+      setTimeout(() => slide(direction, retries + 1), stepMilliseconds + 2);
+    }
   }
-  if (slides > 1) {
-    if (direction == "up") {
-      characterDown();
-    }
-    if (direction == "down") {
-      characterUp();
-    }
-    if (direction == "left") {
-      characterRight();
-    }
-    if (direction == "right") {
-      characterLeft();
-    }
-  }
-  incrementStamina(newMandlenumber);
 };

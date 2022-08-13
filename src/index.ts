@@ -11,16 +11,16 @@ instrument.volume.value = -24;
 
 const handleKeypress = (event: any) => {
   if (event.key === "w") {
-    slide("up");
+    slide("up", 0);
   }
   if (event.key === "a") {
-    slide("left");
+    slide("left", 0);
   }
   if (event.key === "s") {
-    slide("down");
+    slide("down", 0);
   }
   if (event.key === "d") {
-    slide("right");
+    slide("right", 0);
   }
   if (allowAudio) {
     Tone.start();

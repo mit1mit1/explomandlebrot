@@ -18,6 +18,7 @@ export const viewportCentre = {
 export const character = {
   stamina: 1000,
   nextStamina: 950,
+  actionable: true,
 };
 
 export const gridDistance = {
