@@ -8,28 +8,9 @@ import {
 import { drawCharacter } from "./drawing";
 import { getXPosition, getYPosition } from "./grid";
 import { calculateMandlenumber } from "./math";
-import {
-  viewportDown,
-  viewportLeft,
-  viewportRight,
-  viewportUp,
-  zoomIn,
-} from "./viewport";
+import { viewportLeft, viewportUp, zoomIn } from "./viewport";
 
-const incrementStamina = ({
-  xSquare,
-  ySquare,
-}: {
-  xSquare: number;
-  ySquare: number;
-}) => {
-  const mandleNumber = calculateMandlenumber(
-    getXPosition(xSquare, gridDistance.xStepDistance, viewportCentre.centreX),
-    getYPosition(ySquare, gridDistance.yStepDistance, viewportCentre.centreY),
-    0,
-    0,
-    0
-  );
+const incrementStamina = (mandleNumber: number) => {
   character.stamina =
     character.stamina -
     (mandleNumber === -1 ? MAX_ITERATIONS + 1 : mandleNumber - 5);
@@ -57,19 +38,17 @@ export const characterUp = () => {
     characterPosition.ySquare--;
     drawCharacter(characterPosition);
   }
-  incrementStamina(characterPosition);
 };
 
 export const characterDown = () => {
   if (characterPosition.ySquare >= yResolution - 2) {
-    viewportDown(yResolution - 2);
+    viewportUp(-(yResolution - 2));
     characterPosition.ySquare = 1;
     drawCharacter(characterPosition);
   } else {
     characterPosition.ySquare++;
     drawCharacter(characterPosition);
   }
-  incrementStamina(characterPosition);
 };
 
 export const characterLeft = () => {
@@ -81,17 +60,81 @@ export const characterLeft = () => {
     characterPosition.xSquare--;
     drawCharacter(characterPosition);
   }
-  incrementStamina(characterPosition);
 };
 
 export const characterRight = () => {
   if (characterPosition.xSquare >= xResolution - 2) {
-    viewportRight(xResolution - 2);
+    viewportLeft(-(xResolution - 2));
     characterPosition.xSquare = 1;
     drawCharacter(characterPosition);
   } else {
     characterPosition.xSquare++;
     drawCharacter(characterPosition);
   }
-  incrementStamina(characterPosition);
+};
+
+export const slide = (direction: "up" | "down" | "left" | "right") => {
+  console.log("initialise slide");
+  const currentMandlenumber = calculateMandlenumber(
+    getXPosition(
+      characterPosition.xSquare,
+      gridDistance.xStepDistance,
+      viewportCentre.centreX
+    ),
+    getYPosition(
+      characterPosition.ySquare,
+      gridDistance.yStepDistance,
+      viewportCentre.centreY
+    ),
+    0,
+    0,
+    0
+  );
+  let newMandlenumber = currentMandlenumber;
+  let slides = 0;
+  while (newMandlenumber === currentMandlenumber && slides < 100) {
+    if (direction == "up") {
+      characterUp();
+    }
+    if (direction == "down") {
+      characterDown();
+    }
+    if (direction == "left") {
+      characterLeft();
+    }
+    if (direction == "right") {
+      characterRight();
+    }
+    newMandlenumber = calculateMandlenumber(
+      getXPosition(
+        characterPosition.xSquare,
+        gridDistance.xStepDistance,
+        viewportCentre.centreX
+      ),
+      getYPosition(
+        characterPosition.ySquare,
+        gridDistance.yStepDistance,
+        viewportCentre.centreY
+      ),
+      0,
+      0,
+      0
+    );
+    slides++;
+  }
+  if (slides > 1) {
+    if (direction == "up") {
+      characterDown();
+    }
+    if (direction == "down") {
+      characterUp();
+    }
+    if (direction == "left") {
+      characterRight();
+    }
+    if (direction == "right") {
+      characterLeft();
+    }
+  }
+  incrementStamina(newMandlenumber);
 };

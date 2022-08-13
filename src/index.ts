@@ -1,20 +1,6 @@
 import * as Tone from "tone";
-import { getColors } from "./utils/colors";
-import {
-  initialXStepDistance,
-  initialYStepDistance,
-  rectSideLengthX,
-  rectSideLengthY,
-} from "./constants";
-import { getSounds } from "./utils/sounds";
 import PianoMp3 from "tonejs-instrument-piano-mp3";
-import { viewportCentre, gridDistance } from "./state";
-import {
-  characterDown,
-  characterLeft,
-  characterRight,
-  characterUp,
-} from "./utils/characterMovement";
+import { slide } from "./utils/characterMovement";
 
 export let allowAudio = false;
 
@@ -25,16 +11,16 @@ instrument.volume.value = -24;
 
 const handleKeypress = (event: any) => {
   if (event.key === "w") {
-    characterUp();
+    slide("up");
   }
   if (event.key === "a") {
-    characterLeft();
+    slide("left");
   }
   if (event.key === "s") {
-    characterDown();
+    slide("down");
   }
   if (event.key === "d") {
-    characterRight();
+    slide("right");
   }
   if (allowAudio) {
     Tone.start();
