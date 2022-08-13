@@ -10,4 +10,4 @@ export const initialYStepDistance = 0.05
 
 export const MAX_ITERATIONS = 128;
 
-export const stepMilliseconds = 25;
+export const stepMilliseconds = 15;

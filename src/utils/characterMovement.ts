@@ -5,7 +5,7 @@ import {
   gridDistance,
   viewportCentre,
 } from "../state";
-import { drawCharacter } from "./drawing";
+import { drawCharacter, drawPopText } from "./drawing";
 import { getXPosition, getYPosition } from "./grid";
 import { calculateMandlenumber } from "./math";
 import { viewportLeft, viewportUp, zoomIn } from "./viewport";
@@ -18,7 +18,7 @@ const incrementStamina = (mandleNumber: number) => {
     character.stamina = character.nextStamina;
     character.nextStamina = character.nextStamina - 50;
     if (character.stamina <= 0) {
-      alert("Dead");
+      drawPopText("Dead", 5000);
     } else {
       zoomIn();
     }
@@ -146,7 +146,7 @@ export const slide = async (
     incrementStamina(newMandlenumber);
     character.actionable = true;
   } else {
-    if (retries < 8) {
+    if (retries < 10) {
       setTimeout(() => slide(direction, retries + 1), stepMilliseconds + 2);
     }
   }

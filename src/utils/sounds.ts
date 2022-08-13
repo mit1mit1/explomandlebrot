@@ -88,7 +88,6 @@ const pentatonicScale: Array<Pitch> = [
   // "B5",
 ];
 
-
 const pushNote = (
   mandleNumber: number,
   currentTime: ToneJSDuration,
@@ -124,10 +123,6 @@ const pushNote = (
         currentTime
       );
     }
-  } else {
-    if (!instrument.loaded) {
-      alert('instrument unloaded')
-    }
   }
 };
 
@@ -141,12 +136,16 @@ export const getSounds = async (
   Tone.Transport.bpm.value = 120;
   Tone.Transport.position = "0:0:0";
   let sinceDifferentNumberOscillater = 1;
-  let sinceDifferentNumberTraverser = 1;
   let prevMandleNumberOscillater = -2;
-  let prevMandleNumberTraverser = -2;
   let currentTimeOscillater: ToneJSDuration = { "8n": 0 };
-  let currentTimeTraverser: ToneJSDuration = { "16n": 0 };
   let xCentre = Math.floor(xResolution / 2);
+  let sinceDifferentNumberTraverser = 1;
+  let prevMandleNumberTraverser = -2;
+  let currentTimeTraverser: ToneJSDuration = { "16n": 0 };
+
+  let sinceDifferentNumberBackverser = 1;
+  let prevMandleNumberBackverser = -2;
+  let currentTimeBackverser: ToneJSDuration = { "16n": 1 };
   if (allowAudio) {
     Tone.start();
     instrument.releaseAll();
@@ -177,8 +176,8 @@ export const getSounds = async (
       );
       if (mandleNumberOscillater != prevMandleNumberOscillater) {
         pushNote(mandleNumberOscillater, currentTimeOscillater, allowAudio);
-        currentTimeOscillater["8n"] =
-          (currentTimeOscillater["8n"] ?? 0) + sinceDifferentNumberOscillater;
+        currentTimeOscillater["16n"] =
+          (currentTimeOscillater["16n"] ?? 0) + sinceDifferentNumberOscillater * (mandleNumberOscillater % 3 + 1);
         sinceDifferentNumberOscillater = 1;
         prevMandleNumberOscillater = mandleNumberOscillater;
       } else {
@@ -215,6 +214,37 @@ export const getSounds = async (
       } else {
         sinceDifferentNumberTraverser++;
       }
+
+      // let xSquareBackverser =
+      //   (xCentre + Math.floor(i / xResolution)) % xResolution;
+      // let ySquareBackverser = (yCentre + i) % yResolution;
+      // let xPositionBackverser = getXPosition(
+      //   xSquareBackverser,
+      //   xStepDistance,
+      //   centreX
+      // );
+      // let yPositionBackverser = getYPosition(
+      //   ySquareBackverser,
+      //   yStepDistance,
+      //   centreY
+      // );
+
+      // let mandleNumberBackverser = calculateMandlenumber(
+      //   xPositionBackverser,
+      //   yPositionBackverser,
+      //   0,
+      //   0,
+      //   0
+      // );
+      // if (mandleNumberBackverser != prevMandleNumberBackverser) {
+      //   pushNote(mandleNumberBackverser, currentTimeBackverser, allowAudio);
+      //   currentTimeBackverser["16n"] =
+      //     (currentTimeBackverser["16n"] ?? 0) + sinceDifferentNumberBackverser;
+      //   sinceDifferentNumberBackverser = 1;
+      //   prevMandleNumberBackverser = mandleNumberBackverser;
+      // } else {
+      //   sinceDifferentNumberBackverser++;
+      // }
     }
     new Tone.Loop(() => {
       getSounds(
