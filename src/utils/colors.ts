@@ -1,7 +1,14 @@
 import { gridDistance, viewportCentre } from "../state";
-import { rectSideLengthX, rectSideLengthY, xResolution, yResolution } from "../constants";
+import {
+  MAX_ITERATIONS,
+  rectSideLengthX,
+  rectSideLengthY,
+  xResolution,
+  yResolution,
+} from "../constants";
 import { getXPosition, getYPosition } from "./grid";
 import { calculateMandlenumber } from "./math";
+import * as seedrandom from "seedrandom";
 
 const availableColorsMe = [
   "#03fcfc",
@@ -52,6 +59,40 @@ const availableColorsHeat = [
   // "#4d494d",
 ];
 
+const generatedColorNumbers: number[] = [];
+
+const seed =
+  new URLSearchParams(window.location.search).get("randomSeed") || "d";
+
+const myrng = seedrandom.alea(seed);
+
+const colorGap =
+  parseInt(
+    new URLSearchParams(window.location.search).get("colorGap") || "0"
+  ) || Math.floor((myrng() + 0.1) * 31);
+
+generatedColorNumbers.push(Math.floor(myrng() * 4095));
+
+for (let i = 1; i < MAX_ITERATIONS + 1; i++) {
+  generatedColorNumbers.push(
+    (generatedColorNumbers[generatedColorNumbers.length - 1] + colorGap) % 4095
+  );
+}
+
+const getHexString = (num: number) =>
+  "#" + (num <= 16 * 16 ? "0" : "") + Math.floor(num).toString(16);
+
+const generatedColors: string[] = generatedColorNumbers.map((num) =>
+  getHexString(num)
+);
+
+let infiniteNumber = Math.floor(myrng() * 4095) + 130 * colorGap;
+const iterations = 0;
+while (generatedColorNumbers.includes(infiniteNumber) && iterations < 25) {
+  infiniteNumber = Math.floor(myrng() * 4095) + 130 * colorGap;
+}
+const infiniteColor = getHexString(infiniteNumber);
+
 export const getColors = (
   xStepDistance: number,
   centreX: number,
@@ -66,11 +107,9 @@ export const getColors = (
       let yPosition = getYPosition(j, yStepDistance, centreY);
       let mandleNumber = calculateMandlenumber(xPosition, yPosition, 0, 0, 0);
       if (mandleNumber == -1) {
-        colors[i].push("white");
+        colors[i].push(infiniteColor);
       } else {
-        colors[i].push(
-          availableColorsHeat[mandleNumber % availableColorsHeat.length]
-        );
+        colors[i].push(generatedColors[mandleNumber % generatedColors.length]);
       }
     }
   }
@@ -83,7 +122,7 @@ let colors = getColors(
   gridDistance.yStepDistance,
   viewportCentre.centreY
 );
-let prevColors = colors.map((colorArray) => colorArray.map(() => "#000"));
+let prevColors = colors.map((colorArray) => colorArray.map(() => "non-color"));
 
 export const recalculateColors = () => {
   colors = getColors(

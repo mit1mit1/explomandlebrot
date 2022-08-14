@@ -1,6 +1,11 @@
 import { xResolution, yResolution } from "../constants";
 import { allowAudio } from "../";
-import { characterPosition, gridDistance, viewportCentre } from "../state";
+import {
+  characterPosition,
+  gridDistance,
+  viewportCentre,
+  inputability,
+} from "../state";
 import { recalculateColors } from "./colors";
 import { drawCharacter, drawPopText } from "./drawing";
 import { getSounds } from "./sounds";
@@ -53,28 +58,26 @@ export const centreViewportOnCharacter = () => {
   );
 };
 
-let zoomable = true;
-
 export const zoomOut = () => {
-  if (zoomable) {
-    zoomable = false;
+  if (inputability.actionable) {
+    inputability.actionable = false;
     drawPopText("OUT!!", 250);
     centreViewportOnCharacter();
     gridDistance.xStepDistance = gridDistance.xStepDistance * 2;
     gridDistance.yStepDistance = gridDistance.yStepDistance * 2;
     recalculateColors();
-    setTimeout(() => (zoomable = true), 260);
+    setTimeout(() => (inputability.actionable = true), 260);
   }
 };
 
 export const zoomIn = () => {
-  if (zoomable) {
-    zoomable = false;
+  if (inputability.actionable) {
+    inputability.actionable = false;
     drawPopText("IN!", 250);
     centreViewportOnCharacter();
     gridDistance.xStepDistance = gridDistance.xStepDistance * 0.5;
     gridDistance.yStepDistance = gridDistance.yStepDistance * 0.5;
     recalculateColors();
-    setTimeout(() => (zoomable = true), 260);
+    setTimeout(() => (inputability.actionable = true), 260);
   }
 };

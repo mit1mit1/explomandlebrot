@@ -18,10 +18,13 @@ export const viewportCentre = {
 export const character = {
   stamina: 1000,
   nextStamina: 950,
-  actionable: true,
 };
 
 export const gridDistance = {
   xStepDistance: initialXStepDistance,
   yStepDistance: initialYStepDistance,
 };
+
+export const inputability = {
+  actionable: true,
+}

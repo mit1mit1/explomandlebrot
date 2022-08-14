@@ -1,8 +1,14 @@
-import { MAX_ITERATIONS, stepMilliseconds, xResolution, yResolution } from "../constants";
+import {
+  MAX_ITERATIONS,
+  stepMilliseconds,
+  xResolution,
+  yResolution,
+} from "../constants";
 import {
   character,
   characterPosition,
   gridDistance,
+  inputability,
   viewportCentre,
 } from "../state";
 import { drawCharacter, drawPopText } from "./drawing";
@@ -77,8 +83,8 @@ export const slide = async (
   direction: "up" | "down" | "left" | "right",
   retries: number
 ) => {
-  if (character.actionable) {
-    character.actionable = false;
+  if (inputability.actionable) {
+    inputability.actionable = false;
     const currentMandlenumber = calculateMandlenumber(
       getXPosition(
         characterPosition.xSquare,
@@ -144,7 +150,7 @@ export const slide = async (
       }
     }
     // incrementStamina(newMandlenumber);
-    character.actionable = true;
+    inputability.actionable = true;
   } else {
     if (retries < 10) {
       setTimeout(() => slide(direction, retries + 1), stepMilliseconds + 2);
