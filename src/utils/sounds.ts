@@ -8,7 +8,7 @@ import {
 
 import * as Tone from "tone";
 import { getXPosition, getYPosition } from "./grid";
-import { xResolution, yResolution } from "../constants";
+import { instrumentVolume, xResolution, yResolution } from "../constants";
 import { calculateMandlenumber } from "./math";
 import { instrument } from "../";
 
@@ -126,6 +126,11 @@ const pushNote = (
   }
 };
 
+let isTransitioning = false;
+const fadeIncrementDb = 1.4;
+const fadeIncrementMilliseconds = 90;
+const fadeIncrements = 22;
+
 export const getSounds = async (
   xStepDistance: number,
   centreX: number,
@@ -143,14 +148,34 @@ export const getSounds = async (
   let prevMandleNumberTraverser = -2;
   let currentTimeTraverser: ToneJSDuration = { "16n": 0 };
 
-  let sinceDifferentNumberBackverser = 1;
-  let prevMandleNumberBackverser = -2;
-  let currentTimeBackverser: ToneJSDuration = { "16n": 1 };
-  if (allowAudio) {
+  // let sinceDifferentNumberBackverser = 1;
+  // let prevMandleNumberBackverser = -2;
+  // let currentTimeBackverser: ToneJSDuration = { "16n": 1 };
+  if (allowAudio && !isTransitioning) {
+    isTransitioning = true;
+    for (let i = 0; i < fadeIncrements; i++) {
+      console.log("setting first timeouts " + i);
+      instrument.volume.value = instrument.volume.value - fadeIncrementDb;
+      await new Promise((r) => setTimeout(r, fadeIncrementMilliseconds));
+    }
     Tone.start();
     instrument.releaseAll();
     Tone.Transport.cancel();
     instrument.sync();
+    for (let i = 1; i < fadeIncrements + 1; i++) {
+      console.log("setting second timeouts" + i);
+      setTimeout(
+        () =>
+          (instrument.volume.value = instrument.volume.value + fadeIncrementDb),
+        fadeIncrementMilliseconds * i
+      );
+      if (i === 15) {
+        setTimeout(
+          () => (isTransitioning = false),
+          fadeIncrementMilliseconds * i / 2
+        );
+      }
+    }
     let yCentre = Math.floor(yResolution / 2);
     for (let i = 3; i < xResolution * yResolution; i++) {
       let xSquareOscillater = xCentre + Math.floor(i / 5) * (-1) ** i;
@@ -177,7 +202,8 @@ export const getSounds = async (
       if (mandleNumberOscillater != prevMandleNumberOscillater) {
         pushNote(mandleNumberOscillater, currentTimeOscillater, allowAudio);
         currentTimeOscillater["16n"] =
-          (currentTimeOscillater["16n"] ?? 0) + sinceDifferentNumberOscillater * (mandleNumberOscillater % 3 + 1);
+          (currentTimeOscillater["16n"] ?? 0) +
+          sinceDifferentNumberOscillater * ((mandleNumberOscillater % 3) + 1);
         sinceDifferentNumberOscillater = 1;
         prevMandleNumberOscillater = mandleNumberOscillater;
       } else {

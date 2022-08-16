@@ -1,5 +1,6 @@
 import * as Tone from "tone";
 import PianoMp3 from "tonejs-instrument-piano-mp3";
+import { instrumentVolume } from "./constants";
 import { slide } from "./utils/characterMovement";
 import { centreViewportOnCharacter, zoomIn, zoomOut } from "./utils/viewport";
 
@@ -8,7 +9,7 @@ export let allowAudio = false;
 export const instrument = new PianoMp3({
   minify: true,
 }).toDestination("main");
-instrument.volume.value = -24;
+instrument.volume.value = instrumentVolume;
 
 const handleKeypress = (event: any) => {
   if (event.key === "w") {

@@ -10,33 +10,45 @@ import { recalculateColors } from "./colors";
 import { drawCharacter, drawPopText } from "./drawing";
 import { getSounds } from "./sounds";
 
+let changedViewportsInLastTwoSeconds = 0;
+
 export const viewportUp = (steps: number) => {
+  changedViewportsInLastTwoSeconds++;
+  setTimeout(() => changedViewportsInLastTwoSeconds--, 2000);
   viewportCentre.centreY =
     viewportCentre.centreY - gridDistance.yStepDistance * steps;
   recalculateColors();
-  getSounds(
-    gridDistance.xStepDistance,
-    viewportCentre.centreX,
-    gridDistance.yStepDistance,
-    viewportCentre.centreY,
-    allowAudio
-  );
+  if (changedViewportsInLastTwoSeconds === 1) {
+    getSounds(
+      gridDistance.xStepDistance,
+      viewportCentre.centreX,
+      gridDistance.yStepDistance,
+      viewportCentre.centreY,
+      allowAudio
+    );
+  }
 };
 
 export const viewportLeft = (steps: number) => {
+  changedViewportsInLastTwoSeconds++;
+  setTimeout(() => changedViewportsInLastTwoSeconds--, 2000);
   viewportCentre.centreX =
     viewportCentre.centreX - gridDistance.xStepDistance * steps;
   recalculateColors();
-  getSounds(
-    gridDistance.xStepDistance,
-    viewportCentre.centreX,
-    gridDistance.yStepDistance,
-    viewportCentre.centreY,
-    allowAudio
-  );
+  if (changedViewportsInLastTwoSeconds === 1) {
+    getSounds(
+      gridDistance.xStepDistance,
+      viewportCentre.centreX,
+      gridDistance.yStepDistance,
+      viewportCentre.centreY,
+      allowAudio
+    );
+  }
 };
 
 export const centreViewportOnCharacter = () => {
+  changedViewportsInLastTwoSeconds++;
+  setTimeout(() => changedViewportsInLastTwoSeconds--, 2000);
   viewportCentre.centreX =
     viewportCentre.centreX -
     gridDistance.xStepDistance *
@@ -49,13 +61,15 @@ export const centreViewportOnCharacter = () => {
   characterPosition.xSquare = Math.floor(xResolution / 2);
   characterPosition.ySquare = Math.floor(yResolution / 2);
   drawCharacter(characterPosition);
-  getSounds(
-    gridDistance.xStepDistance,
-    viewportCentre.centreX,
-    gridDistance.yStepDistance,
-    viewportCentre.centreY,
-    allowAudio
-  );
+  if (changedViewportsInLastTwoSeconds === 1) {
+    getSounds(
+      gridDistance.xStepDistance,
+      viewportCentre.centreX,
+      gridDistance.yStepDistance,
+      viewportCentre.centreY,
+      allowAudio
+    );
+  }
 };
 
 export const zoomOut = () => {
