@@ -154,7 +154,6 @@ export const getSounds = async (
   if (allowAudio && !isTransitioning) {
     isTransitioning = true;
     for (let i = 0; i < fadeIncrements; i++) {
-      console.log("setting first timeouts " + i);
       instrument.volume.value = instrument.volume.value - fadeIncrementDb;
       await new Promise((r) => setTimeout(r, fadeIncrementMilliseconds));
     }
@@ -163,7 +162,6 @@ export const getSounds = async (
     Tone.Transport.cancel();
     instrument.sync();
     for (let i = 1; i < fadeIncrements + 1; i++) {
-      console.log("setting second timeouts" + i);
       setTimeout(
         () =>
           (instrument.volume.value = instrument.volume.value + fadeIncrementDb),

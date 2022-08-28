@@ -3,6 +3,7 @@ import PianoMp3 from "tonejs-instrument-piano-mp3";
 import { instrumentVolume } from "./constants";
 import { slide } from "./utils/characterMovement";
 import { centreViewportOnCharacter, zoomIn, zoomOut } from "./utils/viewport";
+import "./utils/connectivity";
 
 export let allowAudio = false;
 
