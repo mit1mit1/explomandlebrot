@@ -1,6 +1,5 @@
 export const playerId = parseInt(new URLSearchParams(window.location.search).get("playerId") || "0");
 export const opponentId = parseInt(new URLSearchParams(window.location.search).get("opponentId") || "1");
-console.log("player Id is " + playerId);
 
 export const sendPosition = (
   id: number,

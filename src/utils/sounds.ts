@@ -131,6 +131,76 @@ const fadeIncrementDb = 1.4;
 const fadeIncrementMilliseconds = 90;
 const fadeIncrements = 22;
 
+const pushSounds = (
+  xStart: number,
+  yStart: number,
+  iterationsToPush: number,
+  getNextX: (
+    currentX: number,
+    currentY: number,
+    currentIteration: number
+  ) => number,
+  getNextY: (
+    currentX: number,
+    currentY: number,
+    currentIteration: number
+  ) => number,
+  startTime: ToneJSDuration,
+  durationIncrement: BaseDuration,
+  calculateDurationIncrease: (
+    sinceDifferentNumber: number,
+    mandleNumber: number
+  ) => number
+): ToneJSDuration => {
+  let sinceDifferentNumber = 1;
+  let prevMandleNumber = -2;
+  let currentTime = startTime;
+  let currentX = xStart;
+  let currentY = yStart;
+
+  for (let i = 0; i < iterationsToPush; i++) {
+    console.log("calculating from ", currentX, currentY)
+    let mandleNumber = calculateMandlenumber(currentX, currentY, 0, 0, 0);
+    if (mandleNumber != prevMandleNumber) {
+      pushNote(mandleNumber, currentTime, true);
+      currentTime[durationIncrement] =
+        (currentTime[durationIncrement] ?? 0) +
+        calculateDurationIncrease(sinceDifferentNumber, mandleNumber);
+      sinceDifferentNumber = 1;
+      prevMandleNumber = mandleNumber;
+    } else {
+      sinceDifferentNumber++;
+    }
+    currentX = getNextX(currentX, currentY, i);
+    currentY = getNextY(currentY, currentY, i);
+  }
+  return currentTime;
+};
+
+const fadeOutThenIn = async () => {
+  for (let i = 0; i < fadeIncrements; i++) {
+    instrument.volume.value = instrument.volume.value - fadeIncrementDb;
+    await new Promise((r) => setTimeout(r, fadeIncrementMilliseconds));
+  }
+  Tone.start();
+  instrument.releaseAll();
+  Tone.Transport.cancel();
+  instrument.sync();
+  for (let i = 1; i < fadeIncrements + 1; i++) {
+    setTimeout(
+      () =>
+        (instrument.volume.value = instrument.volume.value + fadeIncrementDb),
+      fadeIncrementMilliseconds * i
+    );
+    if (i === 15) {
+      setTimeout(
+        () => (isTransitioning = false),
+        (fadeIncrementMilliseconds * i) / 2
+      );
+    }
+  }
+};
+
 export const getSounds = async (
   xStepDistance: number,
   centreX: number,
@@ -140,137 +210,90 @@ export const getSounds = async (
 ) => {
   Tone.Transport.bpm.value = 120;
   Tone.Transport.position = "0:0:0";
-  let sinceDifferentNumberOscillater = 1;
-  let prevMandleNumberOscillater = -2;
-  let currentTimeOscillater: ToneJSDuration = { "8n": 0 };
-  let xCentre = Math.floor(xResolution / 2);
-  let sinceDifferentNumberTraverser = 1;
-  let prevMandleNumberTraverser = -2;
-  let currentTimeTraverser: ToneJSDuration = { "16n": 0 };
-
-  // let sinceDifferentNumberBackverser = 1;
-  // let prevMandleNumberBackverser = -2;
-  // let currentTimeBackverser: ToneJSDuration = { "16n": 1 };
   if (allowAudio && !isTransitioning) {
     isTransitioning = true;
-    for (let i = 0; i < fadeIncrements; i++) {
-      instrument.volume.value = instrument.volume.value - fadeIncrementDb;
-      await new Promise((r) => setTimeout(r, fadeIncrementMilliseconds));
-    }
-    Tone.start();
-    instrument.releaseAll();
-    Tone.Transport.cancel();
-    instrument.sync();
-    for (let i = 1; i < fadeIncrements + 1; i++) {
-      setTimeout(
-        () =>
-          (instrument.volume.value = instrument.volume.value + fadeIncrementDb),
-        fadeIncrementMilliseconds * i
-      );
-      if (i === 15) {
-        setTimeout(
-          () => (isTransitioning = false),
-          fadeIncrementMilliseconds * i / 2
-        );
-      }
-    }
+
+    await fadeOutThenIn();
+    let startTimeOscillater: ToneJSDuration = { "8n": 1 };
+    let startTimeTraverser: ToneJSDuration = { "16n": 1 };
+
+    let xCentre = Math.floor(xResolution / 2);
     let yCentre = Math.floor(yResolution / 2);
-    for (let i = 3; i < xResolution * yResolution; i++) {
-      let xSquareOscillater = xCentre + Math.floor(i / 5) * (-1) ** i;
-      let ySquareOscillater =
-        yCentre + Math.floor(i / 3) * (-1) ** Math.floor(i / 3);
-      let xPositionOscillater = getXPosition(
-        xSquareOscillater,
-        xStepDistance,
-        centreX
-      );
-      let yPositionOscillater = getYPosition(
-        ySquareOscillater,
-        yStepDistance,
-        centreY
-      );
 
-      let mandleNumberOscillater = calculateMandlenumber(
-        xPositionOscillater,
-        yPositionOscillater,
-        0,
-        0,
-        0
-      );
-      if (mandleNumberOscillater != prevMandleNumberOscillater) {
-        pushNote(mandleNumberOscillater, currentTimeOscillater, allowAudio);
-        currentTimeOscillater["16n"] =
-          (currentTimeOscillater["16n"] ?? 0) +
-          sinceDifferentNumberOscillater * ((mandleNumberOscillater % 3) + 1);
-        sinceDifferentNumberOscillater = 1;
-        prevMandleNumberOscillater = mandleNumberOscillater;
-      } else {
-        sinceDifferentNumberOscillater++;
-      }
+    const xStartOscillater = xCentre + Math.floor(3 / 5) * (-1) ** 3;
+    const yStartOscillater =
+      yCentre + Math.floor(3 / 3) * (-1) ** Math.floor(3 / 3);
 
-      let xSquareTraverser = (xCentre + i) % xResolution;
-      let ySquareTraverser =
-        yCentre + (Math.floor(i / yResolution) % yResolution);
-      let xPositionTraverser = getXPosition(
-        xSquareTraverser,
-        xStepDistance,
-        centreX
-      );
-      let yPositionTraverser = getYPosition(
-        ySquareTraverser,
-        yStepDistance,
-        centreY
-      );
+    const getNextXOscillater = (
+      currentX: number,
+      currentY: number,
+      currentIteration: number
+    ) =>
+      xCentre +
+      Math.floor((currentIteration + 4) / 5) * (-1) ** (currentIteration + 4) * xStepDistance;
+    const getNextYOscillater = (
+      currentX: number,
+      currentY: number,
+      currentIteration: number
+    ) =>
+      yCentre +
+      Math.floor((currentIteration + 4) / 3) *
+        (-1) ** Math.floor((currentIteration + 4) / 3) * yStepDistance;
 
-      let mandleNumberTraverser = calculateMandlenumber(
-        xPositionTraverser,
-        yPositionTraverser,
-        0,
-        0,
-        0
-      );
-      if (mandleNumberTraverser != prevMandleNumberTraverser) {
-        pushNote(mandleNumberTraverser, currentTimeTraverser, allowAudio);
-        currentTimeTraverser["16n"] =
-          (currentTimeTraverser["16n"] ?? 0) + sinceDifferentNumberTraverser;
-        sinceDifferentNumberTraverser = 1;
-        prevMandleNumberTraverser = mandleNumberTraverser;
-      } else {
-        sinceDifferentNumberTraverser++;
-      }
+    const calculateDurationIncreaseOscillater = (
+      sinceDifferentNumberOscillater: number,
+      mandleNumberOscillater: number
+    ) => sinceDifferentNumberOscillater * ((mandleNumberOscillater % 3) + 1);
+    pushSounds(
+      xStartOscillater,
+      yStartOscillater,
+      xResolution * yResolution,
+      getNextXOscillater,
+      getNextYOscillater,
+      startTimeOscillater,
+      "16n",
+      calculateDurationIncreaseOscillater
+    );
 
-      // let xSquareBackverser =
-      //   (xCentre + Math.floor(i / xResolution)) % xResolution;
-      // let ySquareBackverser = (yCentre + i) % yResolution;
-      // let xPositionBackverser = getXPosition(
-      //   xSquareBackverser,
-      //   xStepDistance,
-      //   centreX
-      // );
-      // let yPositionBackverser = getYPosition(
-      //   ySquareBackverser,
-      //   yStepDistance,
-      //   centreY
-      // );
+    const getNextXTraverser = (
+      currentX: number,
+      currentY: number,
+      currentIteration: number
+    ) => {
+      const xSquareTraverser = (xCentre + currentIteration) % xResolution;
+      return getXPosition(xSquareTraverser, xStepDistance, centreX);
+    };
 
-      // let mandleNumberBackverser = calculateMandlenumber(
-      //   xPositionBackverser,
-      //   yPositionBackverser,
-      //   0,
-      //   0,
-      //   0
-      // );
-      // if (mandleNumberBackverser != prevMandleNumberBackverser) {
-      //   pushNote(mandleNumberBackverser, currentTimeBackverser, allowAudio);
-      //   currentTimeBackverser["16n"] =
-      //     (currentTimeBackverser["16n"] ?? 0) + sinceDifferentNumberBackverser;
-      //   sinceDifferentNumberBackverser = 1;
-      //   prevMandleNumberBackverser = mandleNumberBackverser;
-      // } else {
-      //   sinceDifferentNumberBackverser++;
-      // }
-    }
+    const getNextYTraverser = (
+      currentX: number,
+      currentY: number,
+      currentIteration: number
+    ) => {
+      const ySquareTraverser =
+        yCentre + (Math.floor(currentIteration / yResolution) % yResolution);
+      return getYPosition(ySquareTraverser, yStepDistance, centreY);
+    };
+
+    const xStartTraverser = getNextXTraverser(-1, -1, 0);
+    const yStartTraverser = getNextXTraverser(-1, -1, 0);
+    const calculateDurationIncreaseTraverser = (
+      sinceDifferentNumberTraverser: number,
+      mandleNumberTraverser: number
+    ) => sinceDifferentNumberTraverser;
+
+    const traverserEndTime = pushSounds(
+      xStartTraverser,
+      yStartTraverser,
+      xResolution * yResolution,
+      getNextXTraverser,
+      getNextYTraverser,
+      startTimeTraverser,
+      "16n",
+      calculateDurationIncreaseTraverser
+    );
+
     new Tone.Loop(() => {
+      alert("Looping")
       getSounds(
         xStepDistance / 2,
         centreX,
@@ -278,7 +301,7 @@ export const getSounds = async (
         centreY,
         allowAudio
       );
-    }, currentTimeTraverser).start(currentTimeTraverser);
+    }, traverserEndTime).start(traverserEndTime);
     Tone.Transport.start();
   }
 };

@@ -13,7 +13,7 @@ export const calculateMandlenumber = (
   if (!calculatedNumbersX) {
     calculatedNumbersX = calculatedNumbers.set(xPosition, new Map());
   }
-  const calculatedNumber = calculatedNumbersX.get(yPosition);
+  const calculatedNumber = calculatedNumbersX ? calculatedNumbersX.get(yPosition) : undefined;
   if (calculatedNumber) {
     return calculatedNumber;
   }

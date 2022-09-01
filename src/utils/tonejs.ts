@@ -1,3 +1,5 @@
+import { instrument } from "../";
+
 export interface Note {
   pitch: Pitch;
   durations: Array<BaseDuration>;
@@ -71,3 +73,11 @@ export const addDurationObjects = (
   }
   return newObject;
 };
+
+const volumeSlider = document.querySelector("#volumeSlider");
+volumeSlider?.addEventListener("change", (event) => {
+  instrument.volume.value = (event.target as any).value;
+  if (instrument.volume.value == -50) {
+    instrument.volume.value = -5000;
+  }
+});
