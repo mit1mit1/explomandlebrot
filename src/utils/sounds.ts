@@ -159,7 +159,6 @@ const pushSounds = (
   let currentY = yStart;
 
   for (let i = 0; i < iterationsToPush; i++) {
-    console.log("calculating from ", currentX, currentY)
     let mandleNumber = calculateMandlenumber(currentX, currentY, 0, 0, 0);
     if (mandleNumber != prevMandleNumber) {
       pushNote(mandleNumber, currentTime, true);
@@ -214,31 +213,32 @@ export const getSounds = async (
     isTransitioning = true;
 
     await fadeOutThenIn();
-    let startTimeOscillater: ToneJSDuration = { "8n": 1 };
-    let startTimeTraverser: ToneJSDuration = { "16n": 1 };
+    const startTimeOscillater: ToneJSDuration = { "8n": 1 };
+    const startTimeTraverser: ToneJSDuration = { "16n": 1 };
+    const startTimeTraverserPlusOne: ToneJSDuration = { "16n": 3 };
 
-    let xCentre = Math.floor(xResolution / 2);
-    let yCentre = Math.floor(yResolution / 2);
+    const xCentreSquare = Math.floor(xResolution / 2);
+    const yCentreSquare = Math.floor(yResolution / 2);
 
-    const xStartOscillater = xCentre + Math.floor(3 / 5) * (-1) ** 3;
+    const xStartOscillater = xCentreSquare + Math.floor(3 / 5) * (-1) ** 3;
     const yStartOscillater =
-      yCentre + Math.floor(3 / 3) * (-1) ** Math.floor(3 / 3);
+      yCentreSquare + Math.floor(3 / 3) * (-1) ** Math.floor(3 / 3);
 
     const getNextXOscillater = (
       currentX: number,
       currentY: number,
       currentIteration: number
     ) =>
-      xCentre +
-      Math.floor((currentIteration + 4) / 5) * (-1) ** (currentIteration + 4) * xStepDistance;
+      xCentreSquare +
+      Math.floor((currentIteration + 4) / 5) * (-1) ** (currentIteration + 4) * xStepDistance * 4;
     const getNextYOscillater = (
       currentX: number,
       currentY: number,
       currentIteration: number
     ) =>
-      yCentre +
+      yCentreSquare +
       Math.floor((currentIteration + 4) / 3) *
-        (-1) ** Math.floor((currentIteration + 4) / 3) * yStepDistance;
+        (-1) ** Math.floor((currentIteration + 4) / 3) * yStepDistance * 4;
 
     const calculateDurationIncreaseOscillater = (
       sinceDifferentNumberOscillater: number,
@@ -255,12 +255,89 @@ export const getSounds = async (
       calculateDurationIncreaseOscillater
     );
 
+    const circleState = {
+      xSquare: xCentreSquare,
+      ySquare: yCentreSquare,
+      xSpeed: 0,
+      ySpeed: 1,
+      maxX: 0,
+      maxY: 0,
+      minX: 0,
+      minY: 0,
+    }
+
+    const turnRight = () => {
+      if (circleState.xSpeed == 0) {
+        circleState.xSpeed = circleState.ySpeed;
+        circleState.ySpeed = 0;
+      }
+      else if (circleState.ySpeed == 0) {
+        circleState.ySpeed = -circleState.xSpeed;
+        circleState.xSpeed = 0;
+      }
+    }
+
+
+    const getNextXCircler = (
+      currentX: number,
+      currentY: number,
+      currentIteration: number
+    ) => {
+      circleState.xSquare = (circleState.xSquare + circleState.xSpeed);
+      if (circleState.xSquare > circleState.maxX) {
+        circleState.maxX = circleState.xSquare;
+        turnRight();
+      }
+      if (circleState.xSquare < circleState.minX) {
+        circleState.minX = circleState.xSquare;
+        turnRight();
+      }
+      return getXPosition(circleState.xSquare, xStepDistance, centreX);
+    };
+
+
+    const getNextYCircler = (
+      currentX: number,
+      currentY: number,
+      currentIteration: number
+    ) => {
+      circleState.ySquare = (circleState.ySquare + circleState.ySpeed);
+      if (circleState.ySquare > circleState.maxY) {
+        circleState.maxY = circleState.ySquare;
+        turnRight();
+      }
+      if (circleState.ySquare < circleState.minY) {
+        circleState.minY = circleState.ySquare;
+        turnRight();
+      }
+      return getYPosition(circleState.ySquare, yStepDistance, centreY);
+    };
+
+    const xStartCircler = getNextXCircler(-1, -1, 0);
+    const yStartCircler = getNextXCircler(-1, -1, 0);
+    const calculateDurationIncreaseCircler = (
+      sinceDifferentNumberCircler: number,
+      mandleNumberCircler: number
+    ) => sinceDifferentNumberCircler;
+
+    const traverserEndTime = pushSounds(
+      xStartCircler,
+      yStartCircler,
+      xResolution * yResolution,
+      getNextXCircler,
+      getNextYCircler,
+      startTimeTraverser,
+      "16n",
+      calculateDurationIncreaseCircler
+    );
+
+
     const getNextXTraverser = (
       currentX: number,
       currentY: number,
       currentIteration: number
     ) => {
-      const xSquareTraverser = (xCentre + currentIteration) % xResolution;
+      const xSquareTraverser = (xCentreSquare + currentIteration) % xResolution;
       return getXPosition(xSquareTraverser, xStepDistance, centreX);
     };
 
@@ -270,7 +347,7 @@ export const getSounds = async (
       currentIteration: number
     ) => {
       const ySquareTraverser =
-        yCentre + (Math.floor(currentIteration / yResolution) % yResolution);
+        yCentreSquare + (Math.floor(currentIteration / yResolution) % yResolution);
       return getYPosition(ySquareTraverser, yStepDistance, centreY);
     };
 
@@ -281,7 +358,7 @@ export const getSounds = async (
       mandleNumberTraverser: number
     ) => sinceDifferentNumberTraverser;
 
-    const traverserEndTime = pushSounds(
+    pushSounds(
       xStartTraverser,
       yStartTraverser,
       xResolution * yResolution,
@@ -291,9 +368,19 @@ export const getSounds = async (
       "16n",
       calculateDurationIncreaseTraverser
     );
+    
+    // pushSounds(
+    //   xStartTraverser,
+    //   yStartTraverser,
+    //   xResolution * yResolution,
+    //   getNextXTraverser,
+    //   getNextYTraverser,
+    //   startTimeTraverserPlusOne,
+    //   "16n",
+    //   calculateDurationIncreaseTraverser
+    // );
 
     new Tone.Loop(() => {
-      alert("Looping")
       getSounds(
         xStepDistance / 2,
         centreX,

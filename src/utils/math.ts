@@ -1,6 +1,6 @@
 import { MAX_ITERATIONS } from "../constants";
 
-const calculatedNumbers = new Map();
+const calculatedNumbers: Map<number, Map<number, number>> = new Map();
 
 export const calculateMandlenumber = (
   xPosition: number,
@@ -11,9 +11,19 @@ export const calculateMandlenumber = (
 ): number => {
   let calculatedNumbersX = calculatedNumbers.get(xPosition);
   if (!calculatedNumbersX) {
-    calculatedNumbersX = calculatedNumbers.set(xPosition, new Map());
+    calculatedNumbersX = new Map();
+    calculatedNumbers.set(xPosition, calculatedNumbersX);
   }
-  const calculatedNumber = calculatedNumbersX ? calculatedNumbersX.get(yPosition) : undefined;
+  try {
+    const calculatedNumber = calculatedNumbersX
+      ? calculatedNumbersX.get(yPosition)
+      : undefined;
+  } catch (error) {
+    console.log(xPosition, yPosition, calculatedNumbersX);
+  }
+  const calculatedNumber = calculatedNumbersX
+    ? calculatedNumbersX.get(yPosition)
+    : undefined;
   if (calculatedNumber) {
     return calculatedNumber;
   }
@@ -27,7 +37,7 @@ export const calculateMandlenumber = (
     calculatedNumbersX.set(yPosition, iterations);
     return iterations;
   } else if (iterations > MAX_ITERATIONS) {
-    calculatedNumbers.set(yPosition, -1);
+    calculatedNumbersX.set(yPosition, -1);
     return -1;
   } else {
     return calculateMandlenumber(

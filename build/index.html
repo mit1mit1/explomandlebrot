@@ -15,6 +15,20 @@
         margin-left: -405px;
         top: 50%;
         margin-top: -270px;
+        z-index: -3;
+      }
+
+      .positions {
+        width: 810px;
+        margin: auto;
+      }
+
+      .position-div {
+        display: inline-block;
+      }
+
+      .opponent-position {
+        margin-left: auto;
       }
     </style>
     <script
@@ -24,7 +38,21 @@
     ></script>
   </head>
   <body>
-    <p id="description"></p>
+    <div class="positions">
+      <div id="player-position" class="position-div"></div>
+      <div id="opponent-position" class="position-div"></div>
+    </div>
+    <div class="volume-slider">
+      <label for="volumeSlider">Volume</label><br />
+      <input
+        type="range"
+        min="-50"
+        max="20"
+        value="-25"
+        class="slider"
+        id="volumeSlider"
+      />
+    </div>
     <div tabindex="0" id="explomandlebrotbox">
       <div>
         <canvas
