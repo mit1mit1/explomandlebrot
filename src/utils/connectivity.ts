@@ -9,7 +9,7 @@ export const sendPosition = (
   const xhttp = new XMLHttpRequest();
   xhttp.open(
     "PATCH",
-    `http://127.0.0.1:8081/setPosition/${id}/${xPosition}/${yPosition}`,
+    `https://3c19-202-63-74-35.au.ngrok.io/setPosition/${id}/${xPosition}/${yPosition}`,
     true
   );
   xhttp.send();
@@ -19,7 +19,7 @@ export const getPosition = (id: number) => {
   const xhttp = new XMLHttpRequest();
   xhttp.open(
     "GET",
-    `http://127.0.0.1:8081/getPosition/${id}`,
+    `https://3c19-202-63-74-35.au.ngrok.io/getPosition/${id}`,
     true
   );
   xhttp.send();
