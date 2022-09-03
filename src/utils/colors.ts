@@ -159,15 +159,17 @@ export const recalculateColors = () => {
   }
   sendPosition(playerId, viewportCentre.centreX, viewportCentre.centreY);
   const opponentResponse = getPosition(opponentId);
-  opponentResponse.onreadystatechange = () => {
-    if (opponentResponse.readyState === XMLHttpRequest.DONE) {
-      const opponentPositionElement =
-        document.getElementById("opponent-position");
-      if (opponentPositionElement && opponentResponse.responseText) {
-        opponentPositionElement.innerHTML = opponentResponse.responseText;
+  if (opponentResponse) {
+    opponentResponse.onreadystatechange = () => {
+      if (opponentResponse.readyState === XMLHttpRequest.DONE) {
+        const opponentPositionElement =
+          document.getElementById("opponent-position");
+        if (opponentPositionElement && opponentResponse.responseText) {
+          opponentPositionElement.innerHTML = opponentResponse.responseText;
+        }
       }
-    }
-  };
+    };
+  }
 };
 
 recalculateColors();

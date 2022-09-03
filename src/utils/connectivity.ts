@@ -2,13 +2,16 @@ const params = new URLSearchParams(window.location.search);
 
 export const playerId = parseInt(params.get("playerId") || "0");
 export const opponentId = parseInt(params.get("opponentId") || "1");
-export const serverString = parseInt(params.get("serverString") || "");
+export const serverString = params.get("serverString") || "";
 
 export const sendPosition = (
   id: number,
   xPosition: number,
   yPosition: number
 ) => {
+  if (!serverString) {
+    return;
+  }
   const xhttp = new XMLHttpRequest();
   xhttp.open(
     "PATCH",
@@ -19,6 +22,9 @@ export const sendPosition = (
 };
 
 export const getPosition = (id: number) => {
+  if (!serverString) {
+    return;
+  }
   const xhttp = new XMLHttpRequest();
   xhttp.open(
     "GET",
