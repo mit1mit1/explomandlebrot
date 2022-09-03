@@ -1,4 +1,4 @@
-import { rectSideLengthX, rectSideLengthY } from "../constants";
+import { playerCanvas, playerColor, rectSideLengthX, rectSideLengthY } from "../constants";
 import { characterPosition } from "../state";
 
 export const drawPopText = (text: string, milliseconds: number) => {
@@ -19,12 +19,12 @@ export const drawCharacter = ({
 }: {
   xSquare: number;
   ySquare: number;
-}) => {
-  var canvas = document.getElementById("character-canvas") as any;
+}, characterColor: string, canvasId: string) => {
+  var canvas = document.getElementById(canvasId) as any;
   var gl = canvas?.getContext("2d");
 
   gl.clearRect(0, 0, canvas.width, canvas.height);
-  gl.fillStyle = "#000";
+  gl.fillStyle = characterColor;
   gl.fillRect(
     (xSquare + 0.25) * rectSideLengthX,
     (ySquare + 0.25) * rectSideLengthY,
@@ -33,4 +33,4 @@ export const drawCharacter = ({
   );
 };
 
-drawCharacter(characterPosition);
+drawCharacter(characterPosition, playerColor, playerCanvas);

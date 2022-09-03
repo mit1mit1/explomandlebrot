@@ -1,4 +1,4 @@
-import { xResolution, yResolution } from "../constants";
+import { playerCanvas, playerColor, xResolution, yResolution } from "../constants";
 import { allowAudio } from "../";
 import {
   characterPosition,
@@ -60,7 +60,7 @@ export const centreViewportOnCharacter = () => {
   recalculateColors();
   characterPosition.xSquare = Math.floor(xResolution / 2);
   characterPosition.ySquare = Math.floor(yResolution / 2);
-  drawCharacter(characterPosition);
+  drawCharacter(characterPosition, playerColor, playerCanvas);
   if (changedViewportsInLastTwoSeconds === 1) {
     getSounds(
       gridDistance.xStepDistance,
@@ -94,4 +94,20 @@ export const zoomIn = () => {
     recalculateColors();
     setTimeout(() => (inputability.actionable = true), 260);
   }
+};
+
+export const getXSquare = (xPosition: number) => {
+  return (
+    Math.floor(
+      (xPosition - viewportCentre.centreX) / gridDistance.xStepDistance
+    ) + Math.floor(xResolution / 2)
+  );
+};
+
+export const getYSquare = (yPosition: number) => {
+  return (
+    Math.floor(
+      (yPosition - viewportCentre.centreY) / gridDistance.yStepDistance
+    ) + Math.floor(yResolution / 2)
+  );
 };

@@ -9,12 +9,6 @@ import {
 import { getXPosition, getYPosition } from "./grid";
 import { calculateMandlenumber } from "./math";
 import * as seedrandom from "seedrandom";
-import {
-  getPosition,
-  opponentId,
-  playerId,
-  sendPosition,
-} from "./connectivity";
 
 const availableColorsMe = [
   "#03fcfc",
@@ -152,23 +146,6 @@ export const recalculateColors = () => {
         prevColors[i][j] = colors[i][j];
       }
     }
-  }
-  const playerPositionElement = document.getElementById("player-position");
-  if (playerPositionElement) {
-    playerPositionElement.innerHTML = `(${viewportCentre.centreX}, ${viewportCentre.centreY})`;
-  }
-  sendPosition(playerId, viewportCentre.centreX, viewportCentre.centreY);
-  const opponentResponse = getPosition(opponentId);
-  if (opponentResponse) {
-    opponentResponse.onreadystatechange = () => {
-      if (opponentResponse.readyState === XMLHttpRequest.DONE) {
-        const opponentPositionElement =
-          document.getElementById("opponent-position");
-        if (opponentPositionElement && opponentResponse.responseText) {
-          opponentPositionElement.innerHTML = opponentResponse.responseText;
-        }
-      }
-    };
   }
 };
 

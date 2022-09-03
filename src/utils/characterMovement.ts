@@ -3,6 +3,8 @@ import {
   stepMilliseconds,
   xResolution,
   yResolution,
+  playerColor,
+  playerCanvas,
 } from "../constants";
 import {
   character,
@@ -39,10 +41,10 @@ export const characterUp = () => {
   if (characterPosition.ySquare <= 1) {
     viewportUp(yResolution - 2);
     characterPosition.ySquare = yResolution - 2;
-    drawCharacter(characterPosition);
+    drawCharacter(characterPosition, playerColor, playerCanvas);
   } else {
     characterPosition.ySquare--;
-    drawCharacter(characterPosition);
+    drawCharacter(characterPosition, playerColor, playerCanvas);
   }
 };
 
@@ -50,10 +52,10 @@ export const characterDown = () => {
   if (characterPosition.ySquare >= yResolution - 2) {
     viewportUp(-(yResolution - 2));
     characterPosition.ySquare = 1;
-    drawCharacter(characterPosition);
+    drawCharacter(characterPosition, playerColor, playerCanvas);
   } else {
     characterPosition.ySquare++;
-    drawCharacter(characterPosition);
+    drawCharacter(characterPosition, playerColor, playerCanvas);
   }
 };
 
@@ -61,10 +63,10 @@ export const characterLeft = () => {
   if (characterPosition.xSquare <= 1) {
     viewportLeft(xResolution - 2);
     characterPosition.xSquare = xResolution - 2;
-    drawCharacter(characterPosition);
+    drawCharacter(characterPosition, playerColor, playerCanvas);
   } else {
     characterPosition.xSquare--;
-    drawCharacter(characterPosition);
+    drawCharacter(characterPosition, playerColor, playerCanvas);
   }
 };
 
@@ -72,11 +74,27 @@ export const characterRight = () => {
   if (characterPosition.xSquare >= xResolution - 2) {
     viewportLeft(-(xResolution - 2));
     characterPosition.xSquare = 1;
-    drawCharacter(characterPosition);
+    drawCharacter(characterPosition, playerColor, playerCanvas);
   } else {
     characterPosition.xSquare++;
-    drawCharacter(characterPosition);
+    drawCharacter(characterPosition, playerColor, playerCanvas);
   }
+};
+
+export const getCharacterX = () => {
+  return getXPosition(
+    characterPosition.xSquare,
+    gridDistance.xStepDistance,
+    viewportCentre.centreX
+  );
+};
+
+export const getCharacterY = () => {
+  return getYPosition(
+    characterPosition.ySquare,
+    gridDistance.yStepDistance,
+    viewportCentre.centreY
+  );
 };
 
 export const slide = async (
@@ -86,16 +104,8 @@ export const slide = async (
   if (inputability.actionable) {
     inputability.actionable = false;
     const currentMandlenumber = calculateMandlenumber(
-      getXPosition(
-        characterPosition.xSquare,
-        gridDistance.xStepDistance,
-        viewportCentre.centreX
-      ),
-      getYPosition(
-        characterPosition.ySquare,
-        gridDistance.yStepDistance,
-        viewportCentre.centreY
-      ),
+      getCharacterX(),
+      getCharacterY(),
       0,
       0,
       0
