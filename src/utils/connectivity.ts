@@ -1,5 +1,8 @@
-export const playerId = parseInt(new URLSearchParams(window.location.search).get("playerId") || "0");
-export const opponentId = parseInt(new URLSearchParams(window.location.search).get("opponentId") || "1");
+const params = new URLSearchParams(window.location.search);
+
+export const playerId = parseInt(params.get("playerId") || "0");
+export const opponentId = parseInt(params.get("opponentId") || "1");
+export const serverString = parseInt(params.get("serverString") || "");
 
 export const sendPosition = (
   id: number,
@@ -9,7 +12,7 @@ export const sendPosition = (
   const xhttp = new XMLHttpRequest();
   xhttp.open(
     "PATCH",
-    `https://3c19-202-63-74-35.au.ngrok.io/setPosition/${id}/${xPosition}/${yPosition}`,
+    `https://${serverString}.au.ngrok.io/setPosition/${id}/${xPosition}/${yPosition}`,
     true
   );
   xhttp.send();
@@ -19,7 +22,7 @@ export const getPosition = (id: number) => {
   const xhttp = new XMLHttpRequest();
   xhttp.open(
     "GET",
-    `https://3c19-202-63-74-35.au.ngrok.io/getPosition/${id}`,
+    `https://${serverString}.au.ngrok.io/getPosition/${id}`,
     true
   );
   xhttp.send();
