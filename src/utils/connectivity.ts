@@ -27,7 +27,7 @@ export const getPosition = (id: number) => {
   }
   const xhttp = new XMLHttpRequest();
   xhttp.open(
-    "GET",
+    "PATCH",
     `https://${serverString}.au.ngrok.io/getPosition/${id}`,
     true
   );
