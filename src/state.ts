@@ -29,11 +29,13 @@ export const inputability = {
   actionable: true,
 };
 
+const searchParams = new URLSearchParams(window.location.search);
+
 export const compassDestination = {
-  xPosition: 0,
-  yPosition: 0,
+  xPosition: parseFloat(searchParams.get("xDestination") || "0"),
+  yPosition: parseFloat(searchParams.get("yDestination") || "0"),
 };
 
 export const zoomDestination = {
-  gridDistance: 1,
+  gridDistance: parseFloat(searchParams.get("zoomDestination") || "1"),
 };
