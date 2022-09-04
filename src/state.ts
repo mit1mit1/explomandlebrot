@@ -4,6 +4,7 @@ import {
   xResolution,
   yResolution,
 } from "./constants";
+import { setDepthPointer } from "./utils/depthPointer";
 
 export const characterPosition = {
   xSquare: Math.floor(xResolution / 2),
@@ -39,3 +40,4 @@ export const compassDestination = {
 export const zoomDestination = {
   gridDistance: parseFloat(searchParams.get("zoomDestination") || "1"),
 };
+setDepthPointer(gridDistance.xStepDistance, zoomDestination.gridDistance);
