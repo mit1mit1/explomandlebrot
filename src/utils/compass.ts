@@ -21,7 +21,6 @@ export const setCompass = (
       currentPosition,
       destinationPosition
     );
-    console.log(currentPosition, destinationPosition, rotateDegrees);
     compassElement.style.transform = `rotate(${rotateDegrees}deg)`;
   }
 };

@@ -14,13 +14,6 @@ export const calculateMandlenumber = (
     calculatedNumbersX = new Map();
     calculatedNumbers.set(xPosition, calculatedNumbersX);
   }
-  try {
-    const calculatedNumber = calculatedNumbersX
-      ? calculatedNumbersX.get(yPosition)
-      : undefined;
-  } catch (error) {
-    console.log(xPosition, yPosition, calculatedNumbersX);
-  }
   const calculatedNumber = calculatedNumbersX
     ? calculatedNumbersX.get(yPosition)
     : undefined;

@@ -14,7 +14,9 @@ import { setDepthPointer } from "./depthPointer";
 const params = new URLSearchParams(window.location.search);
 
 export const playerId = parseInt(params.get("playerId") || "0");
+console.log("player id is ", playerId);
 export const opponentId = parseInt(params.get("opponentId") || "1");
+console.log("opponent id is ", opponentId);
 export const serverString = params.get("serverString") || "";
 
 export const sendPosition = (
