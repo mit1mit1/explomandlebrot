@@ -5,7 +5,11 @@
     <title>Explomadlebrot</title>
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="icon" type="image/x-icon" href="https://mit1mit1.github.io/explomandlebrot/public/favicon.ico" />
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="https://mit1mit1.github.io/explomandlebrot/public/favicon.ico"
+    />
     <style>
       .gameCanvas {
         position: absolute;
@@ -30,6 +34,10 @@
       .opponent-position {
         margin-left: auto;
       }
+
+      .compass {
+        display: inline-block;
+      }
     </style>
     <script
       type="module"
@@ -53,6 +61,7 @@
         id="volumeSlider"
       />
     </div>
+    <div id="compass" class="compass">---></div>
     <div tabindex="0" id="explomandlebrotbox">
       <div>
         <canvas

@@ -13,6 +13,7 @@ import {
   inputability,
   viewportCentre,
 } from "../state";
+import { setCompass } from "./compass";
 import { drawCharacter, drawPopText } from "./drawing";
 import { getXPosition, getYPosition } from "./grid";
 import { calculateMandlenumber } from "./math";
@@ -125,6 +126,10 @@ export const slide = async (
       if (direction == "right") {
         characterRight();
       }
+      setCompass(
+        { xPosition: getCharacterX(), yPosition: getCharacterY() },
+        { xPosition: 0, yPosition: 0 }
+      );
       newMandlenumber = calculateMandlenumber(
         getXPosition(
           characterPosition.xSquare,
@@ -160,6 +165,10 @@ export const slide = async (
       }
     }
     // incrementStamina(newMandlenumber);
+    setCompass(
+      { xPosition: getCharacterX(), yPosition: getCharacterY() },
+      { xPosition: 0, yPosition: 0 }
+    );
     inputability.actionable = true;
   } else {
     if (retries < 10) {
