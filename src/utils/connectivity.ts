@@ -89,4 +89,4 @@ const updatePositions = () => {
   }
 };
 
-window.setInterval(updatePositions, 100);
+window.setInterval(updatePositions, 1000);
