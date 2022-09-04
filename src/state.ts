@@ -27,4 +27,13 @@ export const gridDistance = {
 
 export const inputability = {
   actionable: true,
-}
+};
+
+export const compassDestination = {
+  xPosition: 0,
+  yPosition: 0,
+};
+
+export const zoomDestination = {
+  gridDistance: 1,
+};

@@ -9,6 +9,7 @@ import {
 import {
   character,
   characterPosition,
+  compassDestination,
   gridDistance,
   inputability,
   viewportCentre,
@@ -128,7 +129,7 @@ export const slide = async (
       }
       setCompass(
         { xPosition: getCharacterX(), yPosition: getCharacterY() },
-        { xPosition: 0, yPosition: 0 }
+        compassDestination
       );
       newMandlenumber = calculateMandlenumber(
         getXPosition(

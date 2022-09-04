@@ -1,8 +1,15 @@
-import { viewportCentre } from "../state";
+import {
+  compassDestination,
+  gridDistance,
+  viewportCentre,
+  zoomDestination,
+} from "../state";
 import { opponentCanvas, opponentColor } from "../constants";
 import { getCharacterX, getCharacterY } from "./characterMovement";
 import { drawCharacter } from "./drawing";
 import { getXSquare, getYSquare } from "./viewport";
+import { setCompass } from "./compass";
+import { setDepthPointer } from "./depthPointer";
 
 const params = new URLSearchParams(window.location.search);
 
@@ -13,7 +20,8 @@ export const serverString = params.get("serverString") || "";
 export const sendPosition = (
   id: number,
   xPosition: number,
-  yPosition: number
+  yPosition: number,
+  gridDistance: number
 ) => {
   if (!serverString) {
     return;
@@ -21,7 +29,7 @@ export const sendPosition = (
   const xhttp = new XMLHttpRequest();
   xhttp.open(
     "PATCH",
-    `https://${serverString}.au.ngrok.io/setPosition/${id}/${xPosition}/${yPosition}`,
+    `https://${serverString}.au.ngrok.io/setPosition/${id}/${xPosition}/${yPosition}/${gridDistance}`,
     true
   );
   xhttp.send();
@@ -42,7 +50,12 @@ export const getPosition = (id: number) => {
 };
 
 const updatePositions = () => {
-  sendPosition(playerId, getCharacterX(), getCharacterY());
+  sendPosition(
+    playerId,
+    getCharacterX(),
+    getCharacterY(),
+    gridDistance.xStepDistance
+  );
 
   const playerPositionElement = document.getElementById("player-position");
   if (playerPositionElement) {
@@ -52,12 +65,18 @@ const updatePositions = () => {
   if (opponentResponse) {
     opponentResponse.onreadystatechange = () => {
       if (opponentResponse.readyState === XMLHttpRequest.DONE) {
-        const opponentPositionElement =
-          document.getElementById("opponent-position");
-        if (opponentPositionElement && opponentResponse.responseText) {
-          opponentPositionElement.innerHTML = opponentResponse.responseText;
-        }
         const responseJson = JSON.parse(opponentResponse.responseText);
+        compassDestination.xPosition = responseJson.x;
+        compassDestination.yPosition = responseJson.y;
+        zoomDestination.gridDistance = responseJson.gridDistance;
+        setCompass(
+          { xPosition: getCharacterX(), yPosition: getCharacterY() },
+          compassDestination
+        );
+        setDepthPointer(
+          gridDistance.xStepDistance,
+          zoomDestination.gridDistance
+        );
         const opponentPosition = {
           xSquare: getXSquare(responseJson.x),
           ySquare: getYSquare(responseJson.y),

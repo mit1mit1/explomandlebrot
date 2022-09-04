@@ -1,14 +1,21 @@
-import { playerCanvas, playerColor, xResolution, yResolution } from "../constants";
+import {
+  playerCanvas,
+  playerColor,
+  xResolution,
+  yResolution,
+} from "../constants";
 import { allowAudio } from "../";
 import {
   characterPosition,
   gridDistance,
   viewportCentre,
   inputability,
+  zoomDestination,
 } from "../state";
 import { recalculateColors } from "./colors";
 import { drawCharacter, drawPopText } from "./drawing";
 import { getSounds } from "./sounds";
+import { setDepthPointer } from "./depthPointer";
 
 let changedViewportsInLastTwoSeconds = 0;
 
@@ -81,6 +88,7 @@ export const zoomOut = () => {
     gridDistance.yStepDistance = gridDistance.yStepDistance * 2;
     recalculateColors();
     setTimeout(() => (inputability.actionable = true), 260);
+    setDepthPointer(gridDistance.xStepDistance, zoomDestination.gridDistance);
   }
 };
 
@@ -93,6 +101,7 @@ export const zoomIn = () => {
     gridDistance.yStepDistance = gridDistance.yStepDistance * 0.5;
     recalculateColors();
     setTimeout(() => (inputability.actionable = true), 260);
+    setDepthPointer(gridDistance.xStepDistance, zoomDestination.gridDistance);
   }
 };
 
