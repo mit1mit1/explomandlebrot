@@ -61,7 +61,9 @@ const updatePositions = () => {
 
   const playerPositionElement = document.getElementById("player-position");
   if (playerPositionElement) {
-    playerPositionElement.innerHTML = `(${getCharacterX()}, ${getCharacterY()})`;
+    playerPositionElement.innerHTML = `(${getCharacterX()}, ${getCharacterY()}, ${
+      gridDistance.xStepDistance
+    })`;
   }
   const opponentResponse = getPosition(opponentId);
   if (opponentResponse) {
