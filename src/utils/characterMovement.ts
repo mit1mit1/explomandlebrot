@@ -168,7 +168,7 @@ export const slide = async (
     // incrementStamina(newMandlenumber);
     setCompass(
       { xPosition: getCharacterX(), yPosition: getCharacterY() },
-      { xPosition: 0, yPosition: 0 }
+      compassDestination
     );
     inputability.actionable = true;
   } else {
