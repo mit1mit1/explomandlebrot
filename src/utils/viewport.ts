@@ -1,4 +1,6 @@
 import {
+  gridZoomDivider,
+  gridZoomMultiplier,
   playerCanvas,
   playerColor,
   xResolution,
@@ -84,8 +86,8 @@ export const zoomOut = () => {
     inputability.actionable = false;
     drawPopText("OUT!!", 250);
     centreViewportOnCharacter();
-    gridDistance.xStepDistance = gridDistance.xStepDistance * 2;
-    gridDistance.yStepDistance = gridDistance.yStepDistance * 2;
+    gridDistance.xStepDistance = gridDistance.xStepDistance * gridZoomMultiplier;
+    gridDistance.yStepDistance = gridDistance.yStepDistance * gridZoomMultiplier;
     recalculateColors();
     setTimeout(() => (inputability.actionable = true), 260);
     setDepthPointer(gridDistance.xStepDistance, zoomDestination.gridDistance);
@@ -97,8 +99,8 @@ export const zoomIn = () => {
     inputability.actionable = false;
     drawPopText("IN!", 250);
     centreViewportOnCharacter();
-    gridDistance.xStepDistance = gridDistance.xStepDistance * 0.5;
-    gridDistance.yStepDistance = gridDistance.yStepDistance * 0.5;
+    gridDistance.xStepDistance = gridDistance.xStepDistance * gridZoomDivider;
+    gridDistance.yStepDistance = gridDistance.yStepDistance * gridZoomDivider;
     recalculateColors();
     setTimeout(() => (inputability.actionable = true), 260);
     setDepthPointer(gridDistance.xStepDistance, zoomDestination.gridDistance);

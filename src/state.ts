@@ -3,6 +3,7 @@ import {
   initialYStepDistance,
   xResolution,
   yResolution,
+  gridZoomDivider,
 } from "./constants";
 import { setDepthPointer } from "./utils/depthPointer";
 
@@ -33,11 +34,17 @@ export const inputability = {
 const searchParams = new URLSearchParams(window.location.search);
 
 export const compassDestination = {
-  xPosition: parseFloat(searchParams.get("xDestination") || "0"),
-  yPosition: parseFloat(searchParams.get("yDestination") || "0"),
+  xPosition: parseFloat(
+    searchParams.get("xDestination") || (0.5 * Math.random() + 0.5).toString()
+  ),
+  yPosition: parseFloat(
+    searchParams.get("yDestination") || (0.5 * Math.random() + 0.5).toString()
+  ),
 };
-
+console.log(initialXStepDistance * gridZoomDivider)
 export const zoomDestination = {
-  gridDistance: parseFloat(searchParams.get("zoomDestination") || "1"),
+  gridDistance: searchParams.get("zoomDestination")
+    ? parseFloat(searchParams.get("zoomDestination") || "0")
+    : initialXStepDistance * gridZoomDivider,
 };
 setDepthPointer(gridDistance.xStepDistance, zoomDestination.gridDistance);

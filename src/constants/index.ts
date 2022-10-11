@@ -18,3 +18,5 @@ export const playerColor = "#000";
 export const opponentColor = "#fff";
 export const playerCanvas = "player-canvas";
 export const opponentCanvas = "opponent-canvas";
+export const gridZoomMultiplier = 2;
+export const gridZoomDivider = 0.5;
