@@ -1,6 +1,5 @@
 import { gridDistance, viewportCentre } from "../state";
 import {
-  detailMultiplier,
   MAX_ITERATIONS,
   rectSideLengthX,
   rectSideLengthY,
@@ -101,15 +100,11 @@ export const getColors = (
   centreY: number
 ) => {
   const colors: Array<Array<string>> = [];
-  for (let i = 0; i < xResolution * detailMultiplier; i++) {
-    let xPosition = getXPosition(i, xStepDistance / detailMultiplier, centreX);
+  for (let i = 0; i < xResolution; i++) {
+    let xPosition = getXPosition(i, xStepDistance, centreX);
     colors.push([]);
-    for (let j = 0; j < yResolution * detailMultiplier; j++) {
-      let yPosition = getYPosition(
-        j,
-        yStepDistance / detailMultiplier,
-        centreY
-      );
+    for (let j = 0; j < yResolution; j++) {
+      let yPosition = getYPosition(j, yStepDistance, centreY);
       let mandleNumber = calculateMandlenumber(xPosition, yPosition, 0, 0, 0);
       if (mandleNumber == -1) {
         colors[i].push(infiniteColor);
@@ -143,10 +138,10 @@ export const recalculateColors = () => {
       if (prevColors[i][j] !== colors[i][j]) {
         gl.fillStyle = colors[i][j];
         gl.fillRect(
-          (i * rectSideLengthX) / detailMultiplier,
-          (j * rectSideLengthY) / detailMultiplier,
-          rectSideLengthX / detailMultiplier,
-          rectSideLengthY / detailMultiplier
+          i * rectSideLengthX,
+          j * rectSideLengthY,
+          rectSideLengthX,
+          rectSideLengthY
         );
         prevColors[i][j] = colors[i][j];
       }
