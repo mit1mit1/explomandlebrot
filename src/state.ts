@@ -105,6 +105,6 @@ if (!paramXDestination && !paramYDestination) {
     const positiveX = (-1) ** Math.floor(Math.random() * 2);
     const positiveY = (-1) ** Math.floor(Math.random() * 2);
     compassDestination.xPosition = (0.5 + 0.5 * Math.random()) * positiveX;
-    compassDestination.yPosition = 0.5 + 0.5 * Math.random() * positiveY;
+    compassDestination.yPosition = (0.5 + 0.5 * Math.random()) * positiveY;
   }
 }

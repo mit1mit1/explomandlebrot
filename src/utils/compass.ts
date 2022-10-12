@@ -16,8 +16,11 @@ const getAngleToDestination = (
 
 const pageLoadedTime = Date.now();
 
+let found = false;
+
 const checkIfFound = () => {
   if (
+    !found &&
     Math.abs(getCharacterX() - compassDestination.xPosition) <
       3 * gridDistance.xStepDistance &&
     Math.abs(getCharacterY() - compassDestination.yPosition) <
@@ -28,8 +31,8 @@ const checkIfFound = () => {
     const foundTime = Date.now();
     const secondsDiff = (foundTime - pageLoadedTime) / 1000;
     alert(`Nice, found in ${secondsDiff} seconds`);
+    found = true;
   }
-  
 };
 
 export const setCompass = (
