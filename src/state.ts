@@ -40,7 +40,7 @@ const paramYDestination = searchParams.get("yDestination");
 export const zoomDestination = {
   gridDistance: searchParams.get("zoomDestination")
     ? parseFloat(searchParams.get("zoomDestination") || "0")
-    : initialXStepDistance * gridZoomDivider,
+    : initialXStepDistance * gridZoomDivider ** (Math.floor(Math.random() * 9) + 3),
 };
 setDepthPointer(gridDistance.xStepDistance, zoomDestination.gridDistance);
 
