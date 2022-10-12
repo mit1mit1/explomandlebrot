@@ -40,7 +40,8 @@ const paramYDestination = searchParams.get("yDestination");
 export const zoomDestination = {
   gridDistance: searchParams.get("zoomDestination")
     ? parseFloat(searchParams.get("zoomDestination") || "0")
-    : initialXStepDistance * gridZoomDivider ** (Math.floor(Math.random() * 9) + 3),
+    : initialXStepDistance *
+      gridZoomDivider ** (Math.floor(Math.random() * 7) + 4),
 };
 setDepthPointer(gridDistance.xStepDistance, zoomDestination.gridDistance);
 
@@ -101,7 +102,9 @@ if (!paramXDestination && !paramYDestination) {
     attemptsToSetCompass < 15 &&
     !isReachable(compassDestination, zoomDestination)
   ) {
-    compassDestination.xPosition = 0.5 + 0.5 * Math.random();
-    compassDestination.yPosition = 0.5 + 0.5 * Math.random();
+    const positiveX = (-1) ** Math.floor(Math.random() * 2);
+    const positiveY = (-1) ** Math.floor(Math.random() * 2);
+    compassDestination.xPosition = (0.5 + 0.5 * Math.random()) * positiveX;
+    compassDestination.yPosition = 0.5 + 0.5 * Math.random() * positiveY;
   }
 }
