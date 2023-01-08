@@ -27,7 +27,7 @@
     "tonejs-instrument-piano-mp3": "^1.1.2"
   },
   "scripts": {
-    "build": "yarn run webpack --mode=development",
+    "build": "yarn run webpack --mode=development && cp public/index.html build",
     "watch": "yarn run webpack --mode=development --watch ",
     "serve": "live-server --cors --open=false",
     "start": "npm-run-all --parallel watch serve",
