@@ -3,3 +3,6 @@ yarn-error.log
 
 # testing
 /coverage
+
+# dist
+/build
