@@ -244,16 +244,16 @@ export const getSounds = async (
       sinceDifferentNumberOscillater: number,
       mandleNumberOscillater: number
     ) => sinceDifferentNumberOscillater * ((mandleNumberOscillater % 3) + 1);
-    pushSounds(
-      xStartOscillater,
-      yStartOscillater,
-      xResolution * yResolution,
-      getNextXOscillater,
-      getNextYOscillater,
-      startTimeOscillater,
-      "16n",
-      calculateDurationIncreaseOscillater
-    );
+    // pushSounds(
+    //   xStartOscillater,
+    //   yStartOscillater,
+    //   xResolution * yResolution,
+    //   getNextXOscillater,
+    //   getNextYOscillater,
+    //   startTimeOscillater,
+    //   "16n",
+    //   calculateDurationIncreaseOscillater
+    // );
 
     const circleState = {
       xSquare: xCentreSquare,
@@ -320,16 +320,16 @@ export const getSounds = async (
       mandleNumberCircler: number
     ) => sinceDifferentNumberCircler;
 
-    const traverserEndTime = pushSounds(
-      xStartCircler,
-      yStartCircler,
-      xResolution * yResolution,
-      getNextXCircler,
-      getNextYCircler,
-      startTimeTraverser,
-      "16n",
-      calculateDurationIncreaseCircler
-    );
+    //  pushSounds(
+    //   xStartCircler,
+    //   yStartCircler,
+    //   xResolution * yResolution,
+    //   getNextXCircler,
+    //   getNextYCircler,
+    //   startTimeTraverser,
+    //   "16n",
+    //   calculateDurationIncreaseCircler
+    // );
 
 
     const getNextXTraverser = (
@@ -358,7 +358,7 @@ export const getSounds = async (
       mandleNumberTraverser: number
     ) => sinceDifferentNumberTraverser;
 
-    pushSounds(
+    const traverserEndTime = pushSounds(
       xStartTraverser,
       yStartTraverser,
       xResolution * yResolution,

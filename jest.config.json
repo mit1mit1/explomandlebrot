@@ -1,0 +1,13 @@
+{
+    "roots": ["<rootDir>/src"],
+    "collectCoverageFrom": ["src/**/*.{js,jsx,ts,tsx}", "!src/**/*.d.ts", "!**/reportWebVitals.ts", "!src/mocks.ts"],
+  
+    "coverageThreshold": {
+      "global": {
+        "branches": 70,
+        "functions": 74,
+        "lines": 81,
+        "statements": 81
+      }
+    }
+}
