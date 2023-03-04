@@ -1,6 +1,8 @@
 import { compassDestination, gridDistance, zoomDestination } from "../state";
 import { getCharacterX, getCharacterY } from "./characterMovement";
 
+let showCompass = false;
+
 const getAngleToDestination = (
   currentPosition: { xPosition: number; yPosition: number },
   destinationPosition: { xPosition: number; yPosition: number }
@@ -41,11 +43,16 @@ export const setCompass = (
 ) => {
   const compassElement = document.getElementById("compass");
   if (compassElement) {
-    const rotateDegrees = getAngleToDestination(
-      currentPosition,
-      destinationPosition
-    );
-    compassElement.style.transform = `rotate(${rotateDegrees}deg)`;
+    if (showCompass) {
+      const rotateDegrees = getAngleToDestination(
+        currentPosition,
+        destinationPosition
+      );
+      compassElement.innerHTML = '--->';
+      compassElement.style.transform = `rotate(${rotateDegrees}deg)`;
+    } else {
+      compassElement.innerHTML = '';
+    }
   }
   checkIfFound();
 };

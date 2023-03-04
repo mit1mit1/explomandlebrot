@@ -51,6 +51,8 @@ export const getPosition = (id: number) => {
   return xhttp;
 };
 
+let showPositions = false;
+
 const updatePositions = () => {
   sendPosition(
     playerId,
@@ -61,9 +63,13 @@ const updatePositions = () => {
 
   const playerPositionElement = document.getElementById("player-position");
   if (playerPositionElement) {
-    playerPositionElement.innerHTML = `(${getCharacterX()}, ${getCharacterY()}, ${
-      gridDistance.xStepDistance
-    })`;
+    if (showPositions) {
+      playerPositionElement.innerHTML = `(${getCharacterX()}, ${getCharacterY()}, ${
+        gridDistance.xStepDistance
+      })`;
+    } else {
+      playerPositionElement.innerHTML = '';
+    }
   }
   const opponentResponse = getPosition(opponentId);
   if (opponentResponse) {
