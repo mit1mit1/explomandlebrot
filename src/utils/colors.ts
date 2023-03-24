@@ -59,10 +59,65 @@ const availableColorsHeat = [
   // "#4d494d",
 ];
 
+const availableColorsPallete1 = [
+  "#2B2D40",
+  "#8D97AE",
+  "#F8F32B",
+  "#FFFFEE",
+  "#010201",
+  // "#b8aeb7",
+  // "#a39ba2",
+  // "#918a90",
+  // "#7a747a",
+  // "#666166",
+  // "#4d494d",
+];
+
+const availableColorsPallete2 = [
+  "#BCE6EC",
+  "#C391B3",
+  "#AF3B6E",
+  "#424255",
+  "#20FB90",
+  // "#b8aeb7",
+  // "#a39ba2",
+  // "#918a90",
+  // "#7a747a",
+  // "#666166",
+  // "#4d494d",
+];
+
+const availableColorsPallete3 = [
+  "#a3a382",
+  "#d6ce91",
+  "#effbce",
+  "#d6a48f",
+  "#ba8588",
+];
+
+const availableColorsPallete4 = [
+  "#FFDEB9",
+  "#FFDD83",
+  "#FE6244",
+  "#FC2947",
+  "#E21818",
+  "#98DFD6",
+  "#7149C6",
+  "#00235B",
+  "#7149C6",
+  "#98DFD6",
+  "#E21818",
+  "#FC2947",
+  "#FE6244",
+  "#FFDD83",
+];
+
 const generatedColorNumbers: number[] = [];
 
 const seed =
   new URLSearchParams(window.location.search).get("randomSeed") || "d";
+
+const seedMultiplier = 4095;
 
 const myrng = seedrandom.alea(seed);
 
@@ -71,27 +126,32 @@ const colorGap =
     new URLSearchParams(window.location.search).get("colorGap") || "0"
   ) || Math.floor((myrng() + 0.1) * 31);
 
-generatedColorNumbers.push(Math.floor(myrng() * 4095));
+generatedColorNumbers.push(Math.floor(myrng() * seedMultiplier));
 
 for (let i = 1; i < MAX_ITERATIONS + 1; i++) {
   generatedColorNumbers.push(
-    (generatedColorNumbers[generatedColorNumbers.length - 1] + colorGap) % 4095
+    (generatedColorNumbers[generatedColorNumbers.length - 1] + colorGap) %
+      seedMultiplier
   );
 }
 
 const getHexString = (num: number) =>
-  "#" + (num <= 16 * 16 ? "0" : "") + Math.floor(num).toString(16);
+  ("#" + (num <= 16 * 16 ? "0" : "") + Math.floor(num).toString(16)).padEnd(
+    7,
+    "0"
+  );
 
 const generatedColors: string[] = generatedColorNumbers.map((num) =>
   getHexString(num)
 );
 
-let infiniteNumber = Math.floor(myrng() * 4095) + 130 * colorGap;
+let infiniteNumber = Math.floor(myrng() * seedMultiplier) + 130 * colorGap;
 const iterations = 0;
 while (generatedColorNumbers.includes(infiniteNumber) && iterations < 25) {
-  infiniteNumber = Math.floor(myrng() * 4095) + 130 * colorGap;
+  infiniteNumber = Math.floor(myrng() * seedMultiplier) + 130 * colorGap;
 }
 const infiniteColor = getHexString(infiniteNumber);
+console.log(infiniteColor);
 
 export const getColors = (
   xStepDistance: number,
@@ -107,7 +167,8 @@ export const getColors = (
       let yPosition = getYPosition(j, yStepDistance, centreY);
       let mandleNumber = calculateMandlenumber(xPosition, yPosition, 0, 0, 0);
       if (mandleNumber == -1) {
-        colors[i].push(infiniteColor);
+        // colors[i].push(infiniteColor);
+        colors[i].push("#eee");
       } else {
         colors[i].push(generatedColors[mandleNumber % generatedColors.length]);
       }

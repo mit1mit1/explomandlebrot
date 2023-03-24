@@ -1,7 +1,7 @@
-export const xResolution = 54;
-export const yResolution = 36;
-const canvasXPixels= 810;
-const canvasYPixels = 540;
+export const xResolution = 108;
+export const yResolution = 72;
+const canvasXPixels= 1620;
+const canvasYPixels = 1080;
 export const rectSideLengthX = Math.floor(canvasXPixels / xResolution);
 export const rectSideLengthY = Math.floor(canvasYPixels / yResolution);
 
