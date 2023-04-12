@@ -206,7 +206,7 @@ export const getColors = (
         // colors[i].push(infiniteColor);
         colors[i].push("#eee");
       } else {
-        colors[i].push(pallete11[mandleNumber % pallete11.length]);
+        colors[i].push(generatedColors[mandleNumber % generatedColors.length]);
       }
     }
   }
