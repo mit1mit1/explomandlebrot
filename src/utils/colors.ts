@@ -111,6 +111,42 @@ const availableColorsPallete4 = [
   "#FE6244",
   "#FFDD83",
 ];
+const availableColorsPallete5 = [
+  "#351431",
+  "#775253",
+  "#bdc696",
+  "#d1d3c4",
+  "#dfe0dc",
+];
+const availableColorsPallete6 = ["#f5bb00", "#ec9f05", "#d76a03", "#bf3100"];
+
+const pallete7 = ["#084b83", "#42bfdd", "#bbe6e4", "#f0f6f6", "#ff66b3"];
+
+const pallete8 = ["#fdfffc", "#235789", "#c1292e", "#f1d302", "#161925"];
+const pallete9 = [
+  "#f433ab",
+  "#cb04a5",
+  "#934683",
+  "#65334d",
+  "#2d1115",
+  "#bec5ad",
+  "#a4b494",
+  "#519872",
+  "#3b5249",
+  "#34252f",
+];
+const pallete10 = [
+  "#ec91d8",
+  "#ffaaea",
+  "#ffbeef",
+  "#ffd3da",
+  "#e9d3d0",
+  "#ffd3da",
+  "#ffbeef",
+  "#ffaaea",
+];
+
+const pallete11 = ["#966b9d", "#c98686", "#f2b880", "#fff4ec", "#e7cfbc"];
 
 const generatedColorNumbers: number[] = [];
 
@@ -170,7 +206,7 @@ export const getColors = (
         // colors[i].push(infiniteColor);
         colors[i].push("#eee");
       } else {
-        colors[i].push(generatedColors[mandleNumber % generatedColors.length]);
+        colors[i].push(pallete11[mandleNumber % pallete11.length]);
       }
     }
   }
