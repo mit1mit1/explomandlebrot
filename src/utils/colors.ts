@@ -147,20 +147,24 @@ const pallete10 = [
 ];
 
 const pallete11 = ["#966b9d", "#c98686", "#f2b880", "#fff4ec", "#e7cfbc"];
-
+const pallete12 = ["#6c756b", "#93acb5", "#96c5f7", "#a9d3ff", "#f2f4ff"];
 const generatedColorNumbers: number[] = [];
 
-const seed =
-  new URLSearchParams(window.location.search).get("randomSeed") || "d";
+const searchParams = new URLSearchParams(window.location.search);
+
+const seed = searchParams.get("randomSeed") || "d";
 
 const seedMultiplier = 4095;
 
 const myrng = seedrandom.alea(seed);
 
 const colorGap =
-  parseInt(
-    new URLSearchParams(window.location.search).get("colorGap") || "0"
-  ) || Math.floor((myrng() + 0.1) * 31);
+  parseInt(searchParams.get("colorGap") || "0") ||
+  Math.floor((myrng() + 0.1) * 31);
+
+const colorArray = (searchParams.get("colorArray") || "")
+  .split("-")
+  .map((color) => `#${color}`);
 
 generatedColorNumbers.push(Math.floor(myrng() * seedMultiplier));
 
@@ -206,7 +210,13 @@ export const getColors = (
         // colors[i].push(infiniteColor);
         colors[i].push("#eee");
       } else {
-        colors[i].push(generatedColors[mandleNumber % generatedColors.length]);
+        if (colorArray.length) {
+          colors[i].push(colorArray[mandleNumber % colorArray.length]);
+        } else {
+          colors[i].push(
+            generatedColors[mandleNumber % generatedColors.length]
+          );
+        }
       }
     }
   }
