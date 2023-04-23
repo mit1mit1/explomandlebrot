@@ -210,7 +210,7 @@ export const getColors = (
         // colors[i].push(infiniteColor);
         colors[i].push("#eee");
       } else {
-        if (colorArray.length) {
+        if (colorArray.length > 1) {
           colors[i].push(colorArray[mandleNumber % colorArray.length]);
         } else {
           colors[i].push(
