@@ -20,3 +20,5 @@ There's some settings you can play with through URL query parameters:
   - E.g. `?randomSeed=horse&colorGap=123`
 - `colorArray` (`-` separated list of hex codes, no `#`) will override the available colors.
   - E.g. `?colorArray=55e-5391cf-6eb4fa-5391cf-55e-fade6e-f5ff6b-f5f542-fade6e-f5ff6b-3bbf3b-eee`
+- `infiniteColor` (color for the true elements of the set)
+  - E.g. `?infiniteColor=eeffee`

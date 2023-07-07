@@ -190,7 +190,8 @@ const iterations = 0;
 while (generatedColorNumbers.includes(infiniteNumber) && iterations < 25) {
   infiniteNumber = Math.floor(myrng() * seedMultiplier) + 130 * colorGap;
 }
-const infiniteColor = getHexString(infiniteNumber);
+const infiniteColor =  searchParams.get("infiniteColor") ? `#${searchParams.get("infiniteColor")}` : "#eee";
+// const infiniteColor = getHexString(infiniteNumber);
 console.log(infiniteColor);
 
 export const getColors = (
@@ -207,8 +208,8 @@ export const getColors = (
       let yPosition = getYPosition(j, yStepDistance, centreY);
       let mandleNumber = calculateMandlenumber(xPosition, yPosition, 0, 0, 0);
       if (mandleNumber == -1) {
-        // colors[i].push(infiniteColor);
-        colors[i].push("#eee");
+        colors[i].push(infiniteColor);
+        // colors[i].push("#eee");
       } else {
         if (colorArray.length > 1) {
           colors[i].push(colorArray[mandleNumber % colorArray.length]);
