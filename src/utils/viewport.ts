@@ -3,6 +3,7 @@ import {
   gridZoomMultiplier,
   playerCanvas,
   playerColor,
+  soundOn,
   xResolution,
   yResolution,
 } from "../constants";
@@ -23,28 +24,38 @@ let changedViewportsInLastTwoSeconds = 0;
 
 export const viewportUp = (steps: number) => {
   changedViewportsInLastTwoSeconds++;
-  setTimeout(() => changedViewportsInLastTwoSeconds--, 2000);
+  setTimeout(
+    () => changedViewportsInLastTwoSeconds--,
+    2000
+  );
   viewportCentre.centreY =
-    viewportCentre.centreY - gridDistance.yStepDistance * steps;
+    viewportCentre.centreY -
+    gridDistance.yStepDistance * steps;
   recalculateColors();
   if (changedViewportsInLastTwoSeconds === 1) {
-    getSounds(
-      gridDistance.xStepDistance,
-      viewportCentre.centreX,
-      gridDistance.yStepDistance,
-      viewportCentre.centreY,
-      allowAudio
-    );
+    if (soundOn) {
+      getSounds(
+        gridDistance.xStepDistance,
+        viewportCentre.centreX,
+        gridDistance.yStepDistance,
+        viewportCentre.centreY,
+        allowAudio
+      );
+    }
   }
 };
 
 export const viewportLeft = (steps: number) => {
   changedViewportsInLastTwoSeconds++;
-  setTimeout(() => changedViewportsInLastTwoSeconds--, 2000);
+  setTimeout(
+    () => changedViewportsInLastTwoSeconds--,
+    2000
+  );
   viewportCentre.centreX =
-    viewportCentre.centreX - gridDistance.xStepDistance * steps;
+    viewportCentre.centreX -
+    gridDistance.xStepDistance * steps;
   recalculateColors();
-  if (changedViewportsInLastTwoSeconds === 1) {
+  if (changedViewportsInLastTwoSeconds === 1 && soundOn) {
     getSounds(
       gridDistance.xStepDistance,
       viewportCentre.centreX,
@@ -57,20 +68,29 @@ export const viewportLeft = (steps: number) => {
 
 export const centreViewportOnCharacter = () => {
   changedViewportsInLastTwoSeconds++;
-  setTimeout(() => changedViewportsInLastTwoSeconds--, 2000);
+  setTimeout(
+    () => changedViewportsInLastTwoSeconds--,
+    2000
+  );
   viewportCentre.centreX =
     viewportCentre.centreX -
     gridDistance.xStepDistance *
-      (Math.floor(xResolution / 2) - characterPosition.xSquare);
+      (Math.floor(xResolution / 2) -
+        characterPosition.xSquare);
   viewportCentre.centreY =
     viewportCentre.centreY -
     gridDistance.yStepDistance *
-      (Math.floor(yResolution / 2) - characterPosition.ySquare);
+      (Math.floor(yResolution / 2) -
+        characterPosition.ySquare);
   recalculateColors();
   characterPosition.xSquare = Math.floor(xResolution / 2);
   characterPosition.ySquare = Math.floor(yResolution / 2);
-  drawCharacter(characterPosition, playerColor, playerCanvas);
-  if (changedViewportsInLastTwoSeconds === 1) {
+  drawCharacter(
+    characterPosition,
+    playerColor,
+    playerCanvas
+  );
+  if (changedViewportsInLastTwoSeconds === 1 && soundOn) {
     getSounds(
       gridDistance.xStepDistance,
       viewportCentre.centreX,
@@ -86,11 +106,16 @@ export const zoomOut = () => {
     inputability.actionable = false;
     drawPopText("OUT!!", 250);
     centreViewportOnCharacter();
-    gridDistance.xStepDistance = gridDistance.xStepDistance * gridZoomMultiplier;
-    gridDistance.yStepDistance = gridDistance.yStepDistance * gridZoomMultiplier;
+    gridDistance.xStepDistance =
+      gridDistance.xStepDistance * gridZoomMultiplier;
+    gridDistance.yStepDistance =
+      gridDistance.yStepDistance * gridZoomMultiplier;
     recalculateColors();
     setTimeout(() => (inputability.actionable = true), 260);
-    setDepthPointer(gridDistance.xStepDistance, zoomDestination.gridDistance);
+    setDepthPointer(
+      gridDistance.xStepDistance,
+      zoomDestination.gridDistance
+    );
   }
 };
 
@@ -99,18 +124,24 @@ export const zoomIn = () => {
     inputability.actionable = false;
     drawPopText("IN!", 250);
     centreViewportOnCharacter();
-    gridDistance.xStepDistance = gridDistance.xStepDistance * gridZoomDivider;
-    gridDistance.yStepDistance = gridDistance.yStepDistance * gridZoomDivider;
+    gridDistance.xStepDistance =
+      gridDistance.xStepDistance * gridZoomDivider;
+    gridDistance.yStepDistance =
+      gridDistance.yStepDistance * gridZoomDivider;
     recalculateColors();
     setTimeout(() => (inputability.actionable = true), 260);
-    setDepthPointer(gridDistance.xStepDistance, zoomDestination.gridDistance);
+    setDepthPointer(
+      gridDistance.xStepDistance,
+      zoomDestination.gridDistance
+    );
   }
 };
 
 export const getXSquare = (xPosition: number) => {
   return (
     Math.floor(
-      (xPosition - viewportCentre.centreX) / gridDistance.xStepDistance
+      (xPosition - viewportCentre.centreX) /
+        gridDistance.xStepDistance
     ) + Math.floor(xResolution / 2)
   );
 };
@@ -118,7 +149,8 @@ export const getXSquare = (xPosition: number) => {
 export const getYSquare = (yPosition: number) => {
   return (
     Math.floor(
-      (yPosition - viewportCentre.centreY) / gridDistance.yStepDistance
+      (yPosition - viewportCentre.centreY) /
+        gridDistance.yStepDistance
     ) + Math.floor(yResolution / 2)
   );
 };

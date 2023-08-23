@@ -22,3 +22,7 @@ There's some settings you can play with through URL query parameters:
   - E.g. `?colorArray=55e-5391cf-6eb4fa-5391cf-55e-fade6e-f5ff6b-f5f542-fade6e-f5ff6b-3bbf3b-eee`
 - `infiniteColor` (color for the true elements of the set)
   - E.g. `?infiniteColor=eeffee`
+- `centreX` and `centreY` will determine where on the set the render starts.
+  - E.g. `?centreX=-2.001&centreY=0.01`
+- `xStepDistance` and `yStepDistance` will determine how 'zoomed in' the render is. If `yStepDistance` is not provided it will fall back to `xStepDistance`, since if they aren't equal it will distort the render.
+  - E.g. `?xStepDistance=0.05`

@@ -4,6 +4,8 @@ import {
   xResolution,
   yResolution,
   gridZoomDivider,
+  initialCentreX,
+  initialCentreY,
 } from "./constants";
 import { setDepthPointer } from "./utils/depthPointer";
 import { calculateMandlenumber } from "./utils/math";
@@ -14,8 +16,8 @@ export const characterPosition = {
 };
 
 export const viewportCentre = {
-  centreX: -2.001,
-  centreY: 0,
+  centreX: initialCentreX,
+  centreY: initialCentreY,
 };
 
 export const character = {
