@@ -2,8 +2,14 @@ import * as Tone from "tone";
 import PianoMp3 from "tonejs-instrument-piano-mp3";
 import { instrumentVolume } from "./constants";
 import { slide } from "./utils/characterMovement";
-import { centreViewportOnCharacter, zoomIn, zoomOut } from "./utils/viewport";
+import {
+  centreViewportOnCharacter,
+  zoomIn,
+  zoomOut,
+} from "./utils/viewport";
 import "./utils/connectivity";
+import { recorder, saveRecording } from "./utils/colors";
+import { invokeSaveAsDialog } from "recordrtc";
 
 export let allowAudio = false;
 
@@ -33,6 +39,9 @@ const handleKeypress = (event: any) => {
   }
   if (event.key === "f") {
     centreViewportOnCharacter();
+  }
+  if (event.key === "r") {
+    saveRecording();
   }
   if (allowAudio) {
     Tone.start();

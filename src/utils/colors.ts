@@ -12,6 +12,10 @@ import {
 import { getXPosition, getYPosition } from "./grid";
 import { calculateMandlenumber } from "./math";
 import * as seedrandom from "seedrandom";
+import RecordRTC, {
+  CanvasRecorder,
+  invokeSaveAsDialog,
+} from "recordrtc";
 
 const availableColorsMe = [
   "#03fcfc",
@@ -62,6 +66,7 @@ const availableColorsHeat = [
   // "#4d494d",
 ];
 
+// 2B2D40-8D97AE-F8F32B-FFFFEE-010201
 const availableColorsPallete1 = [
   "#2B2D40",
   "#8D97AE",
@@ -266,7 +271,205 @@ const indexes = [];
 for (var n = 0; n < xResolution * yResolution; n++) {
   indexes.push(n);
 }
-const indexMap = shuffle(indexes);
+const indexMap = [...indexes];
+
+const canvas = document.getElementById(
+  "mandlerrain-canvas"
+) as any;
+
+const focusOnNextInterestingPoint = (
+  mandleNumbers: number[][],
+  xStepDistance: number,
+  yStepDistance: number,
+  centreX: number,
+  centreY: number
+) => {
+  let maxDifferentNeighbours = 0;
+  let maxBoundaryElements: Array<{
+    xIndex: number;
+    yIndex: number;
+  }> = [];
+  for (let x = 1; x < xResolution - 1; x++) {
+    for (let y = 1; y < yResolution - 1; y++) {
+      const localMandlenumber = mandleNumbers[x][y];
+      let differentNeighbours = 0;
+      if (
+        mandleNumbers[x - 1][y - 1] !== localMandlenumber
+      ) {
+        differentNeighbours++;
+      }
+      if (mandleNumbers[x - 1][y] !== localMandlenumber) {
+        differentNeighbours++;
+      }
+      if (
+        mandleNumbers[x - 1][y + 1] !== localMandlenumber
+      ) {
+        differentNeighbours++;
+      }
+      if (mandleNumbers[x][y - 1] !== localMandlenumber) {
+        differentNeighbours++;
+      }
+      if (mandleNumbers[x][y + 1] !== localMandlenumber) {
+        differentNeighbours++;
+      }
+      if (
+        mandleNumbers[x + 1][y - 1] !== localMandlenumber
+      ) {
+        differentNeighbours++;
+      }
+      if (mandleNumbers[x + 1][y] !== localMandlenumber) {
+        differentNeighbours++;
+      }
+      if (
+        mandleNumbers[x + 1][y + 1] !== localMandlenumber
+      ) {
+        differentNeighbours++;
+      }
+
+      if (differentNeighbours > maxDifferentNeighbours) {
+        maxDifferentNeighbours = differentNeighbours;
+        maxBoundaryElements = [];
+      }
+
+      if (
+        differentNeighbours === maxDifferentNeighbours &&
+        differentNeighbours > 0
+      ) {
+        maxBoundaryElements.push({
+          xIndex: x,
+          yIndex: y,
+        });
+      }
+    }
+  }
+  if (maxBoundaryElements.length > 0) {
+    const newCenter =
+      maxBoundaryElements[
+        Math.floor(
+          Math.random() * maxBoundaryElements.length
+        )
+      ];
+    viewportCentre.centreX = getXPosition(
+      newCenter.xIndex,
+      xStepDistance,
+      centreX
+    );
+    viewportCentre.centreY = getYPosition(
+      newCenter.yIndex,
+      yStepDistance,
+      centreY
+    );
+    if (
+      Math.random() >
+      (0.1 + Math.log(xStepDistance)) / (64 * Math.log(0.5))
+    ) {
+      gridDistance.xStepDistance =
+        gridDistance.xStepDistance * gridZoomDivider;
+      gridDistance.yStepDistance =
+        gridDistance.yStepDistance * gridZoomDivider;
+    } else {
+      gridDistance.xStepDistance =
+        gridDistance.xStepDistance * gridZoomMultiplier;
+      gridDistance.yStepDistance =
+        gridDistance.yStepDistance * gridZoomMultiplier;
+    }
+    recalculateColors();
+  }
+};
+
+const pushRow = (
+  i: number,
+  mandleNumbers: number[][],
+  xStepDistance: number,
+  yStepDistance: number,
+  centreX: number,
+  centreY: number
+) => {
+  if (i >= xResolution) {
+    if (autoExplore) {
+      setTimeout(
+        () =>
+          focusOnNextInterestingPoint(
+            mandleNumbers,
+            xStepDistance,
+            yStepDistance,
+            centreX,
+            centreY
+          ),
+        1000
+      );
+    }
+  }
+  if (i < xResolution) {
+    let gl = canvas?.getContext("2d", { alpha: false });
+    for (let j = 0; j < yResolution; j++) {
+      const indexTotal = indexMap[i * yResolution + j];
+      const xIndex = Math.floor(indexTotal / yResolution);
+      const yIndex = indexTotal - xIndex * yResolution;
+      let xPosition = getXPosition(
+        xIndex,
+        xStepDistance,
+        centreX
+      );
+      let yPosition = getYPosition(
+        yIndex,
+        yStepDistance,
+        centreY
+      );
+      let mandleNumber = calculateMandlenumber(
+        xPosition,
+        yPosition,
+        0,
+        0,
+        0
+      );
+      mandleNumbers[xIndex][yIndex] = mandleNumber;
+      if (mandleNumber == -1) {
+        gl.fillStyle = infiniteColor;
+        gl.fillRect(
+          xIndex * rectSideLengthX,
+          yIndex * rectSideLengthY,
+          rectSideLengthX,
+          rectSideLengthY
+        );
+      } else {
+        if (colorArray.length > 1) {
+          gl.fillStyle =
+            colorArray[mandleNumber % colorArray.length];
+          gl.fillRect(
+            xIndex * rectSideLengthX,
+            yIndex * rectSideLengthY,
+            rectSideLengthX,
+            rectSideLengthY
+          );
+        } else {
+          gl.fillStyle =
+            generatedColors[
+              mandleNumber % generatedColors.length
+            ];
+          gl.fillRect(
+            xIndex * rectSideLengthX,
+            yIndex * rectSideLengthY,
+            rectSideLengthX,
+            rectSideLengthY
+          );
+        }
+      }
+    }
+    setTimeout(
+      () =>
+        pushRow(
+          i + 1,
+          mandleNumbers,
+          xStepDistance,
+          yStepDistance,
+          centreX,
+          centreY
+        ),
+      10
+    );
+  }
+};
 
 export const getColors = (
   xStepDistance: number,
@@ -278,176 +481,14 @@ export const getColors = (
     { length: xResolution },
     () => []
   );
-  const timeouts = [];
-  for (let i = 0; i < xResolution; i++) {
-    setTimeout(() => {
-      var canvas = document.getElementById(
-        "mandlerrain-canvas"
-      ) as any;
-      var gl = canvas?.getContext("2d", { alpha: false });
-      for (let j = 0; j < yResolution; j++) {
-        const indexTotal = indexMap[i * yResolution + j];
-        const xIndex = Math.floor(indexTotal / yResolution);
-        const yIndex = indexTotal - xIndex * yResolution;
-        let xPosition = getXPosition(
-          xIndex,
-          xStepDistance,
-          centreX
-        );
-        let yPosition = getYPosition(
-          yIndex,
-          yStepDistance,
-          centreY
-        );
-        let mandleNumber = calculateMandlenumber(
-          xPosition,
-          yPosition,
-          0,
-          0,
-          0
-        );
-        mandleNumbers[xIndex][yIndex] = mandleNumber;
-        if (mandleNumber == -1) {
-          gl.fillStyle = infiniteColor;
-          gl.fillRect(
-            xIndex * rectSideLengthX,
-            yIndex * rectSideLengthY,
-            rectSideLengthX,
-            rectSideLengthY
-          );
-        } else {
-          if (colorArray.length > 1) {
-            gl.fillStyle =
-              colorArray[mandleNumber % colorArray.length];
-            gl.fillRect(
-              xIndex * rectSideLengthX,
-              yIndex * rectSideLengthY,
-              rectSideLengthX,
-              rectSideLengthY
-            );
-          } else {
-            gl.fillStyle =
-              generatedColors[
-                mandleNumber % generatedColors.length
-              ];
-            gl.fillRect(
-              xIndex * rectSideLengthX,
-              yIndex * rectSideLengthY,
-              rectSideLengthX,
-              rectSideLengthY
-            );
-          }
-        }
-      }
-    }, i * 7);
-  }
-  if (autoExplore) {
-    setTimeout(() => {
-      let maxDifferentNeighbours = 0;
-      let maxBoundaryElements: Array<{
-        xIndex: number;
-        yIndex: number;
-      }> = [];
-      for (let x = 1; x < xResolution - 1; x++) {
-        for (let y = 1; y < yResolution - 1; y++) {
-          const localMandlenumber = mandleNumbers[x][y];
-          let differentNeighbours = 0;
-          if (
-            mandleNumbers[x - 1][y - 1] !==
-            localMandlenumber
-          ) {
-            differentNeighbours++;
-          }
-          if (
-            mandleNumbers[x - 1][y] !== localMandlenumber
-          ) {
-            differentNeighbours++;
-          }
-          if (
-            mandleNumbers[x - 1][y + 1] !==
-            localMandlenumber
-          ) {
-            differentNeighbours++;
-          }
-          if (
-            mandleNumbers[x][y - 1] !== localMandlenumber
-          ) {
-            differentNeighbours++;
-          }
-          if (
-            mandleNumbers[x][y + 1] !== localMandlenumber
-          ) {
-            differentNeighbours++;
-          }
-          if (
-            mandleNumbers[x + 1][y - 1] !==
-            localMandlenumber
-          ) {
-            differentNeighbours++;
-          }
-          if (
-            mandleNumbers[x + 1][y] !== localMandlenumber
-          ) {
-            differentNeighbours++;
-          }
-          if (
-            mandleNumbers[x + 1][y + 1] !==
-            localMandlenumber
-          ) {
-            differentNeighbours++;
-          }
-
-          if (
-            differentNeighbours > maxDifferentNeighbours
-          ) {
-            maxDifferentNeighbours = differentNeighbours;
-            maxBoundaryElements = [];
-          }
-
-          if (
-            differentNeighbours ===
-              maxDifferentNeighbours &&
-            differentNeighbours > 0
-          ) {
-            maxBoundaryElements.push({
-              xIndex: x,
-              yIndex: y,
-            });
-          }
-        }
-      }
-      if (maxBoundaryElements.length > 0) {
-        const newCenter =
-          maxBoundaryElements[
-            Math.floor(
-              Math.random() * maxBoundaryElements.length
-            )
-          ];
-        viewportCentre.centreX = getXPosition(
-          newCenter.xIndex,
-          xStepDistance,
-          centreX
-        );
-        viewportCentre.centreY = getYPosition(
-          newCenter.yIndex,
-          yStepDistance,
-          centreY
-        );
-        if (Math.random() > 0.21) {
-          gridDistance.xStepDistance =
-            gridDistance.xStepDistance * gridZoomDivider;
-          gridDistance.yStepDistance =
-            gridDistance.yStepDistance * gridZoomDivider;
-        } else {
-          gridDistance.xStepDistance =
-            gridDistance.xStepDistance * gridZoomMultiplier;
-          gridDistance.yStepDistance =
-            gridDistance.yStepDistance * gridZoomMultiplier;
-        }
-        recalculateColors();
-      }
-    }, (xResolution + 1) * 8);
-  }
+  pushRow(
+    0,
+    mandleNumbers,
+    xStepDistance,
+    yStepDistance,
+    centreX,
+    centreY
+  );
 };
 
 // getColors(
@@ -484,5 +525,33 @@ export const recalculateColors = () => {
   //   }
   // }
 };
+export const recorder = new RecordRTC(canvas, {
+  type: "canvas",
+  mimeType: "video/webm;codecs=vp9",
+});
+recorder.startRecording();
+
+export const saveRecording = () => {
+  // recorder.stopRecording(function () {
+  //   recorder.getDataURL((url) => window.open(url));
+  // });
+  recorder.stopRecording(function () {
+    var recordedBlobs = recorder.getBlob();
+    console.log(recordedBlobs);
+    var file = new File([recordedBlobs], "video.webm", {
+      type: "video/webm",
+    });
+
+    invokeSaveAsDialog(file);
+    // var video = document.createElement("video");
+    // video.src = URL.createObjectURL(recordedBlobs);
+    // video.setAttribute("style", "height: 100%;");
+    // document.body.appendChild(video);
+    // video.controls = true;
+    // video.play();
+  });
+};
+
+setTimeout(saveRecording, 1000 * 60 * 30);
 
 recalculateColors();
