@@ -1,6 +1,9 @@
-import { MAX_ITERATIONS } from "../constants";
+import { MAX_ITERATIONS } from "../constants/math";
 
-const calculatedNumbers: Map<number, Map<number, number>> = new Map();
+const calculatedNumbers: Map<
+  number,
+  Map<number, number>
+> = new Map();
 
 export const calculateMandlenumber = (
   xPosition: number,
@@ -21,10 +24,14 @@ export const calculateMandlenumber = (
     return calculatedNumber;
   }
   const nextResultX =
-    xPosition + prevResultX * prevResultX - prevResultY * prevResultY;
-  const nextResultY = yPosition + 2 * prevResultX * prevResultY;
+    xPosition +
+    prevResultX * prevResultX -
+    prevResultY * prevResultY;
+  const nextResultY =
+    yPosition + 2 * prevResultX * prevResultY;
 
-  const magnitude = nextResultX * nextResultX + nextResultY * nextResultY;
+  const magnitude =
+    nextResultX * nextResultX + nextResultY * nextResultY;
 
   if (magnitude > 50) {
     calculatedNumbersX.set(yPosition, iterations);

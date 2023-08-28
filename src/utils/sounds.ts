@@ -8,7 +8,7 @@ import {
 
 import * as Tone from "tone";
 import { getXPosition, getYPosition } from "./grid";
-import { instrumentVolume, xResolution, yResolution } from "../constants";
+import { instrumentVolume, xResolution, yResolution } from "../constants/params";
 import { calculateMandlenumber } from "./math";
 import { instrument } from "../";
 

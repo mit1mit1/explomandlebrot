@@ -1,4 +1,4 @@
-import { playerCanvas, playerColor, rectSideLengthX, rectSideLengthY } from "../constants";
+import { playerCanvas, playerColor, rectSideLengthX, rectSideLengthY } from "../constants/params";
 import { characterPosition } from "../state";
 
 export const drawPopText = (text: string, milliseconds: number) => {

@@ -6,7 +6,7 @@ import {
   soundOn,
   xResolution,
   yResolution,
-} from "../constants";
+} from "../constants/params";
 import { allowAudio } from "../";
 import {
   characterPosition,
@@ -15,7 +15,7 @@ import {
   inputability,
   zoomDestination,
 } from "../state";
-import { recalculateColors } from "./colors";
+import { recalculateColors } from "./colorCanvas";
 import { drawCharacter, drawPopText } from "./drawing";
 import { getSounds } from "./sounds";
 import { setDepthPointer } from "./depthPointer";

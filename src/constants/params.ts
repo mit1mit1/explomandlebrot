@@ -1,3 +1,5 @@
+import seedrandom from "seedrandom";
+
 const searchParams = new URLSearchParams(
   window.location.search
 );
@@ -34,9 +36,8 @@ export const initialYStepDistance = parseFloat(
     "0.05"
 );
 
-export const MAX_ITERATIONS = 128;
-
-export const stepMilliseconds = 15;
+export const seed = searchParams.get("randomSeed") || "d";
+export const myrng = seedrandom.alea(seed);
 
 export const instrumentVolume = -24;
 
@@ -47,4 +48,22 @@ export const opponentCanvas = "opponent-canvas";
 export const gridZoomMultiplier = 2;
 export const gridZoomDivider = 0.5;
 
-export const autoExplore = !!searchParams.get("autoExplore"); 
+export const autoExplore =
+  !!searchParams.get("autoExplore");
+
+export const colorGap =
+  parseInt(searchParams.get("colorGap") || "0") ||
+  Math.floor((myrng() + 0.1) * 31);
+
+export const colorArray = (
+  searchParams.get("colorArray") || ""
+)
+  .split("-")
+  .map((color) => `#${color}`);
+
+export const inifi = parseFloat(
+  searchParams.get("xStepDistance") || "0.05"
+);
+
+export const infiniteColorParam =
+  searchParams.get("infiniteColor");

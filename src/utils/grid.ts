@@ -1,4 +1,4 @@
-import { xResolution, yResolution } from "../constants";
+import { xResolution, yResolution } from "../constants/params";
 
 export const getXPosition = (
   xSquare: number,

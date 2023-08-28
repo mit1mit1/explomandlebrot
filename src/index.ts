@@ -1,6 +1,6 @@
 import * as Tone from "tone";
 import PianoMp3 from "tonejs-instrument-piano-mp3";
-import { instrumentVolume } from "./constants";
+import { instrumentVolume } from "./constants/params";
 import { slide } from "./utils/characterMovement";
 import {
   centreViewportOnCharacter,
@@ -8,7 +8,7 @@ import {
   zoomOut,
 } from "./utils/viewport";
 import "./utils/connectivity";
-import { recorder, saveRecording } from "./utils/colors";
+import { recorder, saveRecording } from "./utils/colorCanvas";
 import { invokeSaveAsDialog } from "recordrtc";
 
 export let allowAudio = false;

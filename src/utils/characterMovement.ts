@@ -1,11 +1,13 @@
 import {
   MAX_ITERATIONS,
   stepMilliseconds,
+} from "../constants/math";
+import {
   xResolution,
   yResolution,
   playerColor,
   playerCanvas,
-} from "../constants";
+} from "../constants/params";
 import {
   character,
   characterPosition,
@@ -18,12 +20,18 @@ import { setCompass } from "./compass";
 import { drawCharacter, drawPopText } from "./drawing";
 import { getXPosition, getYPosition } from "./grid";
 import { calculateMandlenumber } from "./math";
-import { viewportLeft, viewportUp, zoomIn } from "./viewport";
+import {
+  viewportLeft,
+  viewportUp,
+  zoomIn,
+} from "./viewport";
 
 const incrementStamina = (mandleNumber: number) => {
   character.stamina =
     character.stamina -
-    (mandleNumber === -1 ? MAX_ITERATIONS + 1 : mandleNumber - 5);
+    (mandleNumber === -1
+      ? MAX_ITERATIONS + 1
+      : mandleNumber - 5);
   if (character.stamina <= 0) {
     character.stamina = character.nextStamina;
     character.nextStamina = character.nextStamina - 50;
@@ -33,9 +41,11 @@ const incrementStamina = (mandleNumber: number) => {
       zoomIn();
     }
   }
-  const descriptionElement = document.querySelector("#description");
+  const descriptionElement =
+    document.querySelector("#description");
   if (descriptionElement) {
-    descriptionElement.innerHTML = character.stamina.toString();
+    descriptionElement.innerHTML =
+      character.stamina.toString();
   }
 };
 
@@ -43,10 +53,18 @@ export const characterUp = () => {
   if (characterPosition.ySquare <= 1) {
     viewportUp(yResolution - 2);
     characterPosition.ySquare = yResolution - 2;
-    drawCharacter(characterPosition, playerColor, playerCanvas);
+    drawCharacter(
+      characterPosition,
+      playerColor,
+      playerCanvas
+    );
   } else {
     characterPosition.ySquare--;
-    drawCharacter(characterPosition, playerColor, playerCanvas);
+    drawCharacter(
+      characterPosition,
+      playerColor,
+      playerCanvas
+    );
   }
 };
 
@@ -54,10 +72,18 @@ export const characterDown = () => {
   if (characterPosition.ySquare >= yResolution - 2) {
     viewportUp(-(yResolution - 2));
     characterPosition.ySquare = 1;
-    drawCharacter(characterPosition, playerColor, playerCanvas);
+    drawCharacter(
+      characterPosition,
+      playerColor,
+      playerCanvas
+    );
   } else {
     characterPosition.ySquare++;
-    drawCharacter(characterPosition, playerColor, playerCanvas);
+    drawCharacter(
+      characterPosition,
+      playerColor,
+      playerCanvas
+    );
   }
 };
 
@@ -65,10 +91,18 @@ export const characterLeft = () => {
   if (characterPosition.xSquare <= 1) {
     viewportLeft(xResolution - 2);
     characterPosition.xSquare = xResolution - 2;
-    drawCharacter(characterPosition, playerColor, playerCanvas);
+    drawCharacter(
+      characterPosition,
+      playerColor,
+      playerCanvas
+    );
   } else {
     characterPosition.xSquare--;
-    drawCharacter(characterPosition, playerColor, playerCanvas);
+    drawCharacter(
+      characterPosition,
+      playerColor,
+      playerCanvas
+    );
   }
 };
 
@@ -76,10 +110,18 @@ export const characterRight = () => {
   if (characterPosition.xSquare >= xResolution - 2) {
     viewportLeft(-(xResolution - 2));
     characterPosition.xSquare = 1;
-    drawCharacter(characterPosition, playerColor, playerCanvas);
+    drawCharacter(
+      characterPosition,
+      playerColor,
+      playerCanvas
+    );
   } else {
     characterPosition.xSquare++;
-    drawCharacter(characterPosition, playerColor, playerCanvas);
+    drawCharacter(
+      characterPosition,
+      playerColor,
+      playerCanvas
+    );
   }
 };
 
@@ -114,7 +156,10 @@ export const slide = async (
     );
     let newMandlenumber = currentMandlenumber;
     let slides = 0;
-    while (newMandlenumber === currentMandlenumber && slides < 100) {
+    while (
+      newMandlenumber === currentMandlenumber &&
+      slides < 100
+    ) {
       if (direction == "up") {
         characterUp();
       }
@@ -128,7 +173,10 @@ export const slide = async (
         characterRight();
       }
       setCompass(
-        { xPosition: getCharacterX(), yPosition: getCharacterY() },
+        {
+          xPosition: getCharacterX(),
+          yPosition: getCharacterY(),
+        },
         compassDestination
       );
       newMandlenumber = calculateMandlenumber(
@@ -148,7 +196,9 @@ export const slide = async (
       );
       slides++;
       if (newMandlenumber === currentMandlenumber) {
-        await new Promise((r) => setTimeout(r, stepMilliseconds));
+        await new Promise((r) =>
+          setTimeout(r, stepMilliseconds)
+        );
       }
     }
     if (slides > 1) {
@@ -167,13 +217,19 @@ export const slide = async (
     }
     // incrementStamina(newMandlenumber);
     setCompass(
-      { xPosition: getCharacterX(), yPosition: getCharacterY() },
+      {
+        xPosition: getCharacterX(),
+        yPosition: getCharacterY(),
+      },
       compassDestination
     );
     inputability.actionable = true;
   } else {
     if (retries < 10) {
-      setTimeout(() => slide(direction, retries + 1), stepMilliseconds + 2);
+      setTimeout(
+        () => slide(direction, retries + 1),
+        stepMilliseconds + 2
+      );
     }
   }
 };

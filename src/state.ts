@@ -6,7 +6,7 @@ import {
   gridZoomDivider,
   initialCentreX,
   initialCentreY,
-} from "./constants";
+} from "./constants/params";
 import { setDepthPointer } from "./utils/depthPointer";
 import { calculateMandlenumber } from "./utils/math";
 

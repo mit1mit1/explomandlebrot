@@ -4,7 +4,7 @@ import {
   viewportCentre,
   zoomDestination,
 } from "../state";
-import { opponentCanvas, opponentColor } from "../constants";
+import { opponentCanvas, opponentColor } from "../constants/params";
 import { getCharacterX, getCharacterY } from "./characterMovement";
 import { drawCharacter } from "./drawing";
 import { getXSquare, getYSquare } from "./viewport";
