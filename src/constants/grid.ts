@@ -109,7 +109,23 @@ for (let i = 0; i < xResolution; i++) {
   bottomToTopVenetianSweep.push(row);
 }
 
-export const getLeftRightSemiRandomDissolve = () =>
+export const getLeftToRightSemiRandomDissolve = () =>
   leftRightBiassedShuffle(
     JSON.parse(JSON.stringify(leftToRightSweep))
   );
+
+export const getRightToLeftSemiRandomDissolve = () => {
+  const leftRightBiassedShuffle =
+    getLeftToRightSemiRandomDissolve();
+  const rightToLeftBiassedShuffle = [];
+  for (let i = 0; i < xResolution; i++) {
+    const row = [];
+    for (let j = 0; j < yResolution; j++) {
+      row.push({
+        ...leftRightBiassedShuffle[xResolution - i - 1][j],
+      });
+    }
+    rightToLeftBiassedShuffle.push(row);
+  }
+  return rightToLeftBiassedShuffle;
+};

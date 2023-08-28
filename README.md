@@ -13,9 +13,9 @@ This is very much a POC. I like maths, music and experimentation, so I wanted to
 There's some settings you can play with through URL query parameters:
 
 - `xResolution` and `yResolution` (positive integers) will control how detailed the image generated is.
-  - 0 < `xResolution` < 1620;
-  - 0 < `yResolution` < 1080;
-  - E.g. `?xResolution=810&yResolution=540`
+  - 0 < `xResolution` < 1600;
+  - 0 < `yResolution` < 900;
+  - E.g. `?xResolution=800&yResolution=450`
 - `randomSeed` (any string) and `colorGap` (positive integer) will set a default color array, which can be overridden by `colorArray`.
   - E.g. `?randomSeed=horse&colorGap=123`
 - `colorArray` (`-` separated list of hex codes, no `#`) will override the available colors.

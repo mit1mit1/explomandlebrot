@@ -5,15 +5,15 @@ const searchParams = new URLSearchParams(
 );
 
 export const xResolution = parseInt(
-  searchParams.get("xResolution") || "108"
+  searchParams.get("xResolution") || "800"
 );
 export const yResolution = parseInt(
-  searchParams.get("yResolution") || "72"
+  searchParams.get("yResolution") || "450"
 );
 export const soundOn = !!searchParams.get("soundOn");
 
-const canvasXPixels = 1620;
-const canvasYPixels = 1080;
+const canvasXPixels = 1600;
+const canvasYPixels = 900;
 export const rectSideLengthX = Math.floor(
   canvasXPixels / xResolution
 );
@@ -25,7 +25,7 @@ export const initialCentreX = parseFloat(
   searchParams.get("centreX") || "-2.001"
 );
 export const initialCentreY = parseFloat(
-  searchParams.get("centreX") || "0"
+  searchParams.get("centreY") || "0"
 );
 export const initialXStepDistance = parseFloat(
   searchParams.get("xStepDistance") || "0.05"

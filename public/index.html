@@ -17,7 +17,10 @@
     />
     <title>Explomadlebrot</title>
     <base href="/" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1"
+    />
     <link
       rel="icon"
       type="image/x-icon"
@@ -26,13 +29,13 @@
     <style>
       .gameCanvas {
         position: absolute;
-        width: 1620px;
-        height: 1080px;
+        width: 1600px;
+        height: 900px;
         z-index: -3;
       }
 
       .positions {
-        width: 810px;
+        width: 800px;
         margin: auto;
       }
 
@@ -58,7 +61,10 @@
   <body>
     <div class="positions">
       <div id="player-position" class="position-div"></div>
-      <div id="opponent-position" class="position-div"></div>
+      <div
+        id="opponent-position"
+        class="position-div"
+      ></div>
     </div>
     <div class="volume-slider">
       <label for="volumeSlider">Volume</label><br />
@@ -78,26 +84,26 @@
     <div tabindex="0" id="explomandlebrotbox">
       <div>
         <canvas
-          width="1620"
-          height="1080"
+          width="1600"
+          height="900"
           class="gameCanvas"
           id="mandlerrain-canvas"
         ></canvas>
         <canvas
-          width="1620"
-          height="1080"
+          width="1600"
+          height="900"
           class="gameCanvas"
           id="player-canvas"
         ></canvas>
         <canvas
-          width="1620"
-          height="1080"
+          width="1600"
+          height="900"
           class="gameCanvas"
           id="opponent-canvas"
         ></canvas>
         <canvas
-          width="1620"
-          height="1080"
+          width="1600"
+          height="900"
           class="gameCanvas"
           id="text-canvas"
         ></canvas>

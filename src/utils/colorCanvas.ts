@@ -17,7 +17,8 @@ import {
 import {
   TwoDimensionMap,
   bottomToTopVenetianSweep,
-  getLeftRightSemiRandomDissolve,
+  getLeftToRightSemiRandomDissolve,
+  getRightToLeftSemiRandomDissolve,
   topToBottomVenetianSweep,
 } from "../constants/grid";
 
@@ -111,8 +112,7 @@ const focusOnNextInterestingPoint = (
     );
     if (
       Math.random() >
-      (0.1 + Math.log(xStepDistance)) /
-        (128 * Math.log(0.5))
+      Math.log(xStepDistance) / (256 * Math.log(0.5))
     ) {
       gridDistance.xStepDistance =
         (gridDistance.xStepDistance * 2) / 3;
@@ -120,12 +120,11 @@ const focusOnNextInterestingPoint = (
         (gridDistance.yStepDistance * 2) / 3;
     } else {
       gridDistance.xStepDistance =
-        (gridDistance.xStepDistance * 3) / 2;
+        (gridDistance.xStepDistance * 5) / 3;
       gridDistance.yStepDistance =
-        (gridDistance.yStepDistance * 3) / 2;
+        (gridDistance.yStepDistance * 5) / 3;
     }
     sweepLeft = !sweepLeft;
-    console.log("focussing on", { ...gridDistance });
     recalculateColors();
   }
 };
@@ -160,11 +159,6 @@ const pushRow = (
     });
     for (let j = 0; j < yResolution; j++) {
       const { xIndex, yIndex } = mapping[i][j];
-      // sweepLeft
-      //   ? leftToRightSweep[i * yResolution + j]
-      // //   : rightToLeftSweep[i * yResolution + j];
-      // const xIndex = Math.floor((j * xResolution + i) / yResolution);
-      // const yIndex = (j * xResolution + i) - xIndex * yResolution;
       let xPosition = getXPosition(
         xIndex,
         xStepDistance,
@@ -248,12 +242,18 @@ export const getColors = (
     yStepDistance,
     centreX,
     centreY,
-    getLeftRightSemiRandomDissolve()
+    sweepLeft
+      ? getLeftToRightSemiRandomDissolve()
+      : getRightToLeftSemiRandomDissolve()
   );
 };
 
 export const recalculateColors = () => {
-  console.log("recalculating colors");
+  console.log("pushing colors for");
+  console.log({ ...viewportCentre }, { ...gridDistance });
+  console.log(
+    `centreX=${viewportCentre.centreX}&centreY=${viewportCentre.centreY}&xStepDistance=${gridDistance.xStepDistance}&yStepDistance${gridDistance.yStepDistance}`
+  );
   getColors(
     gridDistance.xStepDistance,
     viewportCentre.centreX,
@@ -273,7 +273,6 @@ export const saveRecording = () => {
   // });
   recorder.stopRecording(function () {
     var recordedBlobs = recorder.getBlob();
-    console.log(recordedBlobs);
     var file = new File([recordedBlobs], "video.webm", {
       type: "video/webm",
     });
