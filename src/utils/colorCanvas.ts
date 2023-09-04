@@ -4,6 +4,7 @@ import {
   colorArray,
   rectSideLengthX,
   rectSideLengthY,
+  soundOn,
   xResolution,
   yResolution,
 } from "../constants/params";
@@ -21,14 +22,132 @@ import {
   getRightToLeftSemiRandomDissolve,
   topToBottomVenetianSweep,
 } from "../constants/grid";
+import { getSounds } from "./sounds";
+import { allowAudio } from "../";
 
 let sweepLeft = true;
+const absoluteCentreX = Math.floor(xResolution / 2);
+const absoluteCentreY = Math.floor(yResolution / 2);
+
+const sleep = async (ms: number) => {
+  await new Promise((resolve) => setTimeout(resolve, ms));
+};
 
 const mandlerrainCanvas = document.getElementById(
   "mandlerrain-canvas"
 ) as any;
 
-const focusOnNextInterestingPoint = (
+const gl = mandlerrainCanvas?.getContext("2d", {
+  alpha: false,
+});
+
+const fillMandlesquare = (
+  mandleNumber: number,
+  xStart: number,
+  yStart: number,
+  squareXLength: number,
+  squareYLength: number
+) => {
+  if (mandleNumber == -1) {
+    gl.fillStyle = infiniteColor;
+  } else {
+    if (colorArray.length > 1) {
+      gl.fillStyle =
+        colorArray[mandleNumber % colorArray.length];
+    } else {
+      gl.fillStyle =
+        generatedColors[
+          mandleNumber % generatedColors.length
+        ];
+    }
+  }
+  gl.fillRect(xStart, yStart, squareXLength, squareYLength);
+};
+
+const quickZoom = (
+  zoomMultiplier: number,
+  mandleNumbers: number[][]
+) => {
+  console.log("starting quick zoom", mandleNumbers);
+  const adjustedSideLengthX =
+    rectSideLengthX / zoomMultiplier;
+  const adjustedSideLengthY =
+    rectSideLengthY / zoomMultiplier;
+  mandleNumbers.forEach((column, xIndex) => {
+    if (!column) {
+      return;
+    }
+    column.forEach((mandleNumber, yIndex) => {
+      // console.log(xIndex, yIndex, mandleNumber);
+      let i = xIndex;
+      let j = yIndex;
+      fillMandlesquare(
+        mandleNumber,
+        (absoluteCentreX +
+          (absoluteCentreX - i) *
+            (1 - 1 / zoomMultiplier)) *
+          rectSideLengthX,
+        (absoluteCentreY +
+          (absoluteCentreY - j) *
+            (1 - 1 / zoomMultiplier)) *
+          rectSideLengthY,
+        adjustedSideLengthX,
+        adjustedSideLengthY
+      );
+    });
+  });
+};
+
+const quickTranslate = (
+  newCenter: {
+    xIndex: number;
+    yIndex: number;
+  },
+  mandleNumbers: number[][]
+) => {
+  const translatedMandlenumbers: number[][] = [];
+  const translateX = absoluteCentreX - newCenter.xIndex;
+  const translateY = absoluteCentreY - newCenter.yIndex;
+  let gl = mandlerrainCanvas?.getContext("2d", {
+    alpha: false,
+  });
+  for (let i = 0; i < xResolution; i++) {
+    let adjustedXIndex = i + translateX;
+    translatedMandlenumbers[adjustedXIndex] = [];
+    for (let j = 0; j < yResolution; j++) {
+      let adjustedYIndex = j + translateY;
+      translatedMandlenumbers[adjustedXIndex][
+        adjustedYIndex
+      ] = mandleNumbers[i][j];
+      let mandleNumber = mandleNumbers[i][j];
+
+      // console.log(
+      //   "painting",
+      //   adjustedXIndex,
+      //   adjustedYIndex,
+      //   mandleNumber
+      // );
+      // gl.fillStyle = "#123";
+      // gl.fillRect(
+      //   adjustedXIndex * rectSideLengthX,
+      //   adjustedYIndex * rectSideLengthY,
+      //   rectSideLengthX,
+      //   rectSideLengthY
+      // );
+      fillMandlesquare(
+        mandleNumber,
+        adjustedXIndex * rectSideLengthX,
+        adjustedYIndex * rectSideLengthY,
+        rectSideLengthX,
+        rectSideLengthY
+      );
+    }
+    return translatedMandlenumbers;
+    // alert("finishing quick recolor");
+  }
+};
+
+const focusOnNextInterestingPoint = async (
   mandleNumbers: number[][],
   xStepDistance: number,
   yStepDistance: number,
@@ -100,6 +219,18 @@ const focusOnNextInterestingPoint = (
           Math.random() * maxBoundaryElements.length
         )
       ];
+    const zoomMultiplier =
+      Math.random() >
+      Math.log(xStepDistance) / (256 * Math.log(0.5))
+        ? 2 / 3
+        : 3 / 2;
+    // const translatedMandlenumbers = quickTranslate(
+    //   newCenter,
+    //   mandleNumbers
+    // );
+    // await sleep(100);
+    // quickZoom(zoomMultiplier, translatedMandlenumbers);
+    // await sleep(100);
     viewportCentre.centreX = getXPosition(
       newCenter.xIndex,
       xStepDistance,
@@ -110,26 +241,17 @@ const focusOnNextInterestingPoint = (
       yStepDistance,
       centreY
     );
-    if (
-      Math.random() >
-      Math.log(xStepDistance) / (256 * Math.log(0.5))
-    ) {
-      gridDistance.xStepDistance =
-        (gridDistance.xStepDistance * 2) / 3;
-      gridDistance.yStepDistance =
-        (gridDistance.yStepDistance * 2) / 3;
-    } else {
-      gridDistance.xStepDistance =
-        (gridDistance.xStepDistance * 5) / 3;
-      gridDistance.yStepDistance =
-        (gridDistance.yStepDistance * 5) / 3;
-    }
+    gridDistance.xStepDistance =
+      gridDistance.xStepDistance * zoomMultiplier;
+    gridDistance.yStepDistance =
+      gridDistance.yStepDistance * zoomMultiplier;
+
     sweepLeft = !sweepLeft;
     recalculateColors();
   }
 };
 
-const pushRow = (
+const pushRow = async (
   i: number,
   mandleNumbers: number[][],
   xStepDistance: number,
@@ -139,24 +261,15 @@ const pushRow = (
   mapping: TwoDimensionMap
 ) => {
   if (i >= xResolution) {
-    if (autoExplore) {
-      setTimeout(
-        () =>
-          focusOnNextInterestingPoint(
-            mandleNumbers,
-            xStepDistance,
-            yStepDistance,
-            centreX,
-            centreY
-          ),
-        50
-      );
-    }
+    await focusOnNextInterestingPoint(
+      mandleNumbers,
+      xStepDistance,
+      yStepDistance,
+      centreX,
+      centreY
+    );
   }
   if (i < xResolution) {
-    let gl = mandlerrainCanvas?.getContext("2d", {
-      alpha: false,
-    });
     for (let j = 0; j < yResolution; j++) {
       const { xIndex, yIndex } = mapping[i][j];
       let xPosition = getXPosition(
@@ -177,37 +290,13 @@ const pushRow = (
         0
       );
       mandleNumbers[xIndex][yIndex] = mandleNumber;
-      if (mandleNumber == -1) {
-        gl.fillStyle = infiniteColor;
-        gl.fillRect(
-          xIndex * rectSideLengthX,
-          yIndex * rectSideLengthY,
-          rectSideLengthX,
-          rectSideLengthY
-        );
-      } else {
-        if (colorArray.length > 1) {
-          gl.fillStyle =
-            colorArray[mandleNumber % colorArray.length];
-          gl.fillRect(
-            xIndex * rectSideLengthX,
-            yIndex * rectSideLengthY,
-            rectSideLengthX,
-            rectSideLengthY
-          );
-        } else {
-          gl.fillStyle =
-            generatedColors[
-              mandleNumber % generatedColors.length
-            ];
-          gl.fillRect(
-            xIndex * rectSideLengthX,
-            yIndex * rectSideLengthY,
-            rectSideLengthX,
-            rectSideLengthY
-          );
-        }
-      }
+      fillMandlesquare(
+        mandleNumber,
+        xIndex * rectSideLengthX,
+        yIndex * rectSideLengthY,
+        rectSideLengthX,
+        rectSideLengthY
+      );
     }
     setTimeout(
       () =>
@@ -248,12 +337,21 @@ export const getColors = (
   );
 };
 
-export const recalculateColors = () => {
+export const recalculateColors = async () => {
   console.log("pushing colors for");
   console.log({ ...viewportCentre }, { ...gridDistance });
   console.log(
     `centreX=${viewportCentre.centreX}&centreY=${viewportCentre.centreY}&xStepDistance=${gridDistance.xStepDistance}&yStepDistance${gridDistance.yStepDistance}`
   );
+  if (soundOn) {
+    await getSounds(
+      gridDistance.xStepDistance,
+      viewportCentre.centreX,
+      gridDistance.yStepDistance,
+      viewportCentre.centreY,
+      allowAudio
+    );
+  }
   getColors(
     gridDistance.xStepDistance,
     viewportCentre.centreX,

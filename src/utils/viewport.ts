@@ -20,7 +20,7 @@ import { drawCharacter, drawPopText } from "./drawing";
 import { getSounds } from "./sounds";
 import { setDepthPointer } from "./depthPointer";
 
-let changedViewportsInLastTwoSeconds = 0;
+export let changedViewportsInLastTwoSeconds = 0;
 
 export const viewportUp = (steps: number) => {
   changedViewportsInLastTwoSeconds++;

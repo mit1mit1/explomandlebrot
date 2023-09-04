@@ -207,6 +207,7 @@ export const getSounds = async (
   centreY: number,
   allowAudio: boolean
 ) => {
+  console.log('getting sounds')
   Tone.Transport.bpm.value = 120;
   Tone.Transport.position = "0:0:0";
   if (allowAudio && !isTransitioning) {
