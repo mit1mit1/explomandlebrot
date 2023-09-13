@@ -129,3 +129,9 @@ export const getRightToLeftSemiRandomDissolve = () => {
   }
   return rightToLeftBiassedShuffle;
 };
+
+export const availableTransitionGenerators: (() => TwoDimensionMap)[] =
+  [
+    getLeftToRightSemiRandomDissolve,
+    getRightToLeftSemiRandomDissolve,
+  ];

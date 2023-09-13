@@ -17,15 +17,16 @@ import {
 } from "../constants/colors";
 import {
   TwoDimensionMap,
+  availableTransitionGenerators,
   bottomToTopVenetianSweep,
   getLeftToRightSemiRandomDissolve,
   getRightToLeftSemiRandomDissolve,
+  modulo,
   topToBottomVenetianSweep,
 } from "../constants/grid";
 import { getSounds } from "./sounds";
 import { allowAudio } from "../";
 
-let sweepLeft = true;
 const absoluteCentreX = Math.floor(xResolution / 2);
 const absoluteCentreY = Math.floor(yResolution / 2);
 
@@ -152,7 +153,8 @@ const focusOnNextInterestingPoint = async (
   xStepDistance: number,
   yStepDistance: number,
   centreX: number,
-  centreY: number
+  centreY: number,
+  currentTransitionMapIndex: number
 ) => {
   let maxDifferentNeighbours = 0;
   let maxBoundaryElements: Array<{
@@ -246,8 +248,12 @@ const focusOnNextInterestingPoint = async (
     gridDistance.yStepDistance =
       gridDistance.yStepDistance * zoomMultiplier;
 
-    sweepLeft = !sweepLeft;
-    recalculateColors();
+    recalculateColors(
+      modulo(
+        currentTransitionMapIndex + 1,
+        availableTransitionGenerators.length
+      )
+    );
   }
 };
 
@@ -261,13 +267,7 @@ const pushRow = async (
   mapping: TwoDimensionMap
 ) => {
   if (i >= xResolution) {
-    await focusOnNextInterestingPoint(
-      mandleNumbers,
-      xStepDistance,
-      yStepDistance,
-      centreX,
-      centreY
-    );
+    return;
   }
   if (i < xResolution) {
     for (let j = 0; j < yResolution; j++) {
@@ -298,46 +298,22 @@ const pushRow = async (
         rectSideLengthY
       );
     }
-    setTimeout(
-      () =>
-        pushRow(
-          i + 1,
-          mandleNumbers,
-          xStepDistance,
-          yStepDistance,
-          centreX,
-          centreY,
-          mapping
-        ),
-      10
+    await sleep(10);
+    await pushRow(
+      i + 1,
+      mandleNumbers,
+      xStepDistance,
+      yStepDistance,
+      centreX,
+      centreY,
+      mapping
     );
   }
 };
 
-export const getColors = (
-  xStepDistance: number,
-  centreX: number,
-  yStepDistance: number,
-  centreY: number
+export const recalculateColors = async (
+  transitionMapIndex = 0
 ) => {
-  const mandleNumbers: Array<Array<number>> = Array.from(
-    { length: xResolution },
-    () => []
-  );
-  pushRow(
-    0,
-    mandleNumbers,
-    xStepDistance,
-    yStepDistance,
-    centreX,
-    centreY,
-    sweepLeft
-      ? getLeftToRightSemiRandomDissolve()
-      : getRightToLeftSemiRandomDissolve()
-  );
-};
-
-export const recalculateColors = async () => {
   console.log("pushing colors for");
   console.log({ ...viewportCentre }, { ...gridDistance });
   console.log(
@@ -352,12 +328,32 @@ export const recalculateColors = async () => {
       allowAudio
     );
   }
-  getColors(
-    gridDistance.xStepDistance,
-    viewportCentre.centreX,
-    gridDistance.yStepDistance,
-    viewportCentre.centreY
+
+  const mandleNumbers: Array<Array<number>> = Array.from(
+    { length: xResolution },
+    () => []
   );
+
+  await pushRow(
+    0,
+    mandleNumbers,
+    gridDistance.xStepDistance,
+    gridDistance.yStepDistance,
+    viewportCentre.centreX,
+    viewportCentre.centreY,
+    availableTransitionGenerators[transitionMapIndex]()
+  );
+
+  if (autoExplore) {
+    await focusOnNextInterestingPoint(
+      mandleNumbers,
+      gridDistance.xStepDistance,
+      gridDistance.yStepDistance,
+      viewportCentre.centreX,
+      viewportCentre.centreY,
+      transitionMapIndex
+    );
+  }
 };
 export const recorder = new RecordRTC(mandlerrainCanvas, {
   type: "canvas",
