@@ -1,6 +1,7 @@
 import { gridDistance, viewportCentre } from "../state";
 import {
   autoExplore,
+  autoExploreThreshold,
   colorArray,
   rectSideLengthX,
   rectSideLengthY,
@@ -198,19 +199,28 @@ const focusOnNextInterestingPoint = async (
         differentNeighbours++;
       }
 
-      if (differentNeighbours > maxDifferentNeighbours) {
-        maxDifferentNeighbours = differentNeighbours;
-        maxBoundaryElements = [];
-      }
+      if (autoExploreThreshold === "max") {
+        if (differentNeighbours > maxDifferentNeighbours) {
+          maxDifferentNeighbours = differentNeighbours;
+          maxBoundaryElements = [];
+        }
 
-      if (
-        differentNeighbours === maxDifferentNeighbours &&
-        differentNeighbours > 0
-      ) {
-        maxBoundaryElements.push({
-          xIndex: x,
-          yIndex: y,
-        });
+        if (
+          differentNeighbours === maxDifferentNeighbours &&
+          differentNeighbours > 0
+        ) {
+          maxBoundaryElements.push({
+            xIndex: x,
+            yIndex: y,
+          });
+        }
+      } else {
+        if (differentNeighbours > autoExploreThreshold) {
+          maxBoundaryElements.push({
+            xIndex: x,
+            yIndex: y,
+          });
+        }
       }
     }
   }

@@ -67,3 +67,11 @@ export const inifi = parseFloat(
 
 export const infiniteColorParam =
   searchParams.get("infiniteColor");
+
+export const autoExploreThreshold = searchParams.get(
+  "autoExploreThreshold"
+)
+  ? parseInt(
+      searchParams.get("autoExploreThreshold") ?? "0"
+    )
+  : "max";
